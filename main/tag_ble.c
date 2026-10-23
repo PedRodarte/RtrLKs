@@ -18,7 +18,7 @@
 #include "services/gatt/ble_svc_gatt.h"
 
 /* a7c300NN-1b8e-4f2a-9d6e-3c5b7e9f0a12, em ordem little-endian */
-#define LUCAS_UUID(n) \
+#define TAG_UUID(n) \
     BLE_UUID128_INIT(0x12, 0x0a, 0x9f, 0x7e, 0x5b, 0x3c, 0x6e, 0x9d, 0x2a, 0x4f, 0x8e, 0x1b, (n), 0x00, 0xc3, 0xa7)
 
 #define TEXT_MAX           32 /* bytes UTF-8 aceitos numa escrita */
@@ -40,11 +40,11 @@ typedef struct {
 
 static const char *TAG = "tag_ble";
 
-static const ble_uuid128_t UUID_SVC = LUCAS_UUID(0x01);
-static const ble_uuid128_t UUID_HEARTBEAT = LUCAS_UUID(0x02);
-static const ble_uuid128_t UUID_COMING = LUCAS_UUID(0x03);
-static const ble_uuid128_t UUID_COMMAND = LUCAS_UUID(0x04);
-static const ble_uuid128_t UUID_STATE = LUCAS_UUID(0x05);
+static const ble_uuid128_t UUID_SVC = TAG_UUID(0x01);
+static const ble_uuid128_t UUID_HEARTBEAT = TAG_UUID(0x02);
+static const ble_uuid128_t UUID_COMING = TAG_UUID(0x03);
+static const ble_uuid128_t UUID_COMMAND = TAG_UUID(0x04);
+static const ble_uuid128_t UUID_STATE = TAG_UUID(0x05);
 
 static tag_ble_callbacks_t s_cb;
 static SemaphoreHandle_t s_lock;
@@ -94,8 +94,8 @@ static bool pairing_allowed(void)
 
 void tag_ble_open_pairing_window(void)
 {
-    s_pairing_until_us = esp_timer_get_time() + (int64_t)CONFIG_LUCAS_PAIRING_WINDOW_S * 1000000;
-    ESP_LOGI(TAG, "pareamento liberado por %d s", CONFIG_LUCAS_PAIRING_WINDOW_S);
+    s_pairing_until_us = esp_timer_get_time() + (int64_t)CONFIG_FINDLK_PAIRING_WINDOW_S * 1000000;
+    ESP_LOGI(TAG, "pareamento liberado por %d s", CONFIG_FINDLK_PAIRING_WINDOW_S);
     s_cb.on_pairing_window(true);
 }
 
@@ -306,7 +306,7 @@ static int gap_event(struct ble_gap_event *event, void *arg)
                 .action = BLE_SM_IOACT_DISP,
                 .passkey = esp_random() % 1000000,
             };
-#if CONFIG_LUCAS_TEST_LOG_PASSKEY
+#if CONFIG_FINDLK_TEST_LOG_PASSKEY
             ESP_LOGW(TAG, "TESTE passkey=%06" PRIu32, io.passkey);
 #else
             ESP_LOGI(TAG, "passkey exibido na tela");
@@ -372,10 +372,10 @@ static proximity_t level_for_rssi(float rssi, proximity_t current)
 {
     /* thresholds[i] = RSSI mínimo do nível i + 1 */
     static const int thresholds[PROXIMITY_LEVELS - 1] = {
-        CONFIG_LUCAS_RSSI_APPROACHING,
-        CONFIG_LUCAS_RSSI_NEAR,
-        CONFIG_LUCAS_RSSI_VERY_NEAR,
-        CONFIG_LUCAS_RSSI_MAX,
+        CONFIG_FINDLK_RSSI_APPROACHING,
+        CONFIG_FINDLK_RSSI_NEAR,
+        CONFIG_FINDLK_RSSI_VERY_NEAR,
+        CONFIG_FINDLK_RSSI_MAX,
     };
     proximity_t level = PROXIMITY_FAR;
     for (int i = 0; i < PROXIMITY_LEVELS - 1; i++) {
@@ -496,7 +496,7 @@ esp_err_t tag_ble_init(const tag_ble_callbacks_t *callbacks)
         rc = ble_gatts_add_svcs(GATT_SERVICES);
     }
     if (rc == 0) {
-        rc = ble_svc_gap_device_name_set(CONFIG_LUCAS_BLE_NAME);
+        rc = ble_svc_gap_device_name_set(CONFIG_FINDLK_BLE_NAME);
     }
     if (rc != 0) {
         ESP_LOGE(TAG, "GATT: %d", rc);

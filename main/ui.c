@@ -5,7 +5,7 @@
 
 #include "display.h"
 #include "esp_lvgl_port.h"
-#include "fonts/lucas_fonts.h"
+#include "fonts/findlk_fonts.h"
 #include "src/libs/qrcode/qrcodegen.h"
 
 #define COLOR_LOST_TITLE lv_color_hex(0xFFD600) /* amarelo */
@@ -98,12 +98,12 @@ void ui_show_test_pattern(void)
     lv_obj_set_style_border_width(frame, 1, 0);
     lv_obj_set_style_radius(frame, CORNER_RADIUS, 0);
 
-    add_label(scr, "Teste de tela", &lucas_font_22, lv_color_white());
-    add_label(scr, "172 x 320", &lucas_font_14, lv_palette_main(LV_PALETTE_GREY));
+    add_label(scr, "Teste de tela", &findlk_font_22, lv_color_white());
+    add_label(scr, "172 x 320", &findlk_font_14, lv_palette_main(LV_PALETTE_GREY));
     add_label(scr, "Ação, coração, pão\navó, você, já, aí\nÁÉÍÓÚ ÂÊÔ ÃÕ Ç\nàü ñ ¿¡ 25° nº",
-              &lucas_font_16, lv_color_white());
+              &findlk_font_16, lv_color_white());
 
-    /* Barras de cor: se vermelho e azul trocarem, ative LUCAS_LCD_BGR */
+    /* Barras de cor: se vermelho e azul trocarem, ative FINDLK_LCD_BGR */
     static const struct { uint32_t rgb; const char *name; } bars[] = {
         {0xFF0000, "Verm."}, {0x00FF00, "Verde"}, {0x0000FF, "Azul"},
     };
@@ -116,7 +116,7 @@ void ui_show_test_pattern(void)
         lv_obj_set_flex_align(col, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
         lv_obj_set_style_pad_row(col, 2, 0);
         add_box(col, 44, 44, lv_color_hex(bars[i].rgb));
-        add_label(col, bars[i].name, &lucas_font_14, lv_color_white());
+        add_label(col, bars[i].name, &findlk_font_14, lv_color_white());
     }
 
     /* Degradê de cinza: confere inversão de cores (preto deve ficar à esquerda) */
@@ -136,7 +136,7 @@ void ui_show_lost(const char *url)
     lv_obj_set_flex_align(scr, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     /* Só maiúsculas: a altura reservada para acentos sobre maiúsculas pode ser encolhida */
-    lv_obj_t *title = add_label(scr, "CRIANÇA PERDIDA", &lucas_font_black_40, COLOR_LOST_TITLE);
+    lv_obj_t *title = add_label(scr, "CRIANÇA PERDIDA", &findlk_font_black_40, COLOR_LOST_TITLE);
     lv_obj_set_style_text_line_space(title, -8, 0);
 
     /* O lv_qrcode desenha módulos inteiros e preenche a sobra com branco. Usando um
@@ -157,7 +157,7 @@ void ui_show_lost(const char *url)
     lv_qrcode_set_light_color(qr, lv_color_white());
     lv_qrcode_update(qr, url, url_len);
 
-    lv_obj_t *body = add_label(scr, "Escaneie para avisar aos pais", &lucas_font_22, lv_color_white());
+    lv_obj_t *body = add_label(scr, "Escaneie para avisar aos pais", &findlk_font_22, lv_color_white());
     lv_obj_set_style_pad_hor(body, 6, 0);
     show_end();
 }
@@ -176,7 +176,7 @@ void ui_show_approaching(const char *name, proximity_t level)
     lv_obj_set_style_pad_ver(scr, EDGE_PAD_V, 0);
     lv_obj_set_style_pad_row(scr, 4, 0);
     lv_obj_set_flex_align(scr, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    add_label(scr, title, &lucas_font_black_30, lv_color_white());
+    add_label(scr, title, &findlk_font_black_30, lv_color_white());
 
     /* Indicador estilo "sinal": barras crescentes, preenchidas até o nível atual */
     lv_obj_t *bars = add_box(scr, lv_pct(100), 60, lv_color_black());
@@ -188,10 +188,10 @@ void ui_show_approaching(const char *name, proximity_t level)
         lv_obj_set_style_radius(bar, 4, 0);
         lv_obj_set_style_bg_opa(bar, i <= (int)level ? LV_OPA_COVER : LV_OPA_20, 0);
     }
-    add_label(scr, PROXIMITY_TEXT[level], &lucas_font_16, lv_color_white());
+    add_label(scr, PROXIMITY_TEXT[level], &findlk_font_16, lv_color_white());
 
-    add_label(scr, LV_SYMBOL_WARNING, &lucas_font_icon_36, COLOR_STAY_HERE);
-    lv_obj_t *stay = add_label(scr, "FIQUE PARADO", &lucas_font_black_40, COLOR_STAY_HERE);
+    add_label(scr, LV_SYMBOL_WARNING, &findlk_font_icon_36, COLOR_STAY_HERE);
+    lv_obj_t *stay = add_label(scr, "FIQUE PARADO", &findlk_font_black_40, COLOR_STAY_HERE);
     lv_obj_set_style_text_line_space(stay, -8, 0);
     show_end();
 }
@@ -204,10 +204,10 @@ void ui_show_passkey(uint32_t passkey)
     show_begin();
     lv_obj_t *scr = new_screen(COLOR_PAIR_BG, 8);
     lv_obj_set_style_pad_row(scr, 12, 0);
-    add_label(scr, "Pareamento", &lucas_font_22, lv_color_white());
-    add_label(scr, "Digite este código no celular:", &lucas_font_16, lv_color_white());
-    add_label(scr, digits, &lucas_font_digits_40, lv_color_white());
-    add_label(scr, CONFIG_LUCAS_BLE_NAME, &lucas_font_14, lv_palette_lighten(LV_PALETTE_BLUE, 2));
+    add_label(scr, "Pareamento", &findlk_font_22, lv_color_white());
+    add_label(scr, "Digite este código no celular:", &findlk_font_16, lv_color_white());
+    add_label(scr, digits, &findlk_font_digits_40, lv_color_white());
+    add_label(scr, CONFIG_FINDLK_BLE_NAME, &findlk_font_14, lv_palette_lighten(LV_PALETTE_BLUE, 2));
     show_end();
 }
 
@@ -218,8 +218,8 @@ void ui_show_info(const char *title, const char *body)
     lv_obj_set_style_pad_ver(scr, 24, 0);
     lv_obj_set_flex_align(scr, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_row(scr, 12, 0);
-    add_label(scr, title, &lucas_font_black_30, COLOR_STAY_HERE);
-    lv_obj_t *text = add_label(scr, body, &lucas_font_16, lv_color_white());
+    add_label(scr, title, &findlk_font_black_30, COLOR_STAY_HERE);
+    lv_obj_t *text = add_label(scr, body, &findlk_font_16, lv_color_white());
     lv_obj_set_style_text_align(text, LV_TEXT_ALIGN_LEFT, 0);
     show_end();
 }

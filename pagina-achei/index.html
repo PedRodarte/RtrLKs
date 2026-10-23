@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Achei o Lucas</title>
+<title>Achei uma criança</title>
 <style>
 /* Uma coluna, botão grande, nada de fontes externas: precisa abrir rápido
    em qualquer celular, até com sinal fraco. */
@@ -71,11 +71,11 @@ textarea {
 <body>
 <main>
   <span class="tag">Criança perdida</span>
-  <h1>Você encontrou o Lucas. Obrigado!</h1>
-  <p class="lead">Os pais dele já estão procurando. Com um toque, você manda para eles onde vocês estão.</p>
-  <p class="ask">Por favor, fique com ele aí mesmo até os pais chegarem.</p>
+  <h1 id="titulo">Você encontrou uma criança perdida. Obrigado!</h1>
+  <p class="lead">Os responsáveis já estão procurando. Com um toque, você manda para eles onde vocês estão.</p>
+  <p class="ask">Por favor, fique com a criança aí mesmo até os responsáveis chegarem.</p>
 
-  <button id="btn-local" type="button">Enviar nossa localização aos pais</button>
+  <button id="btn-local" type="button">Enviar nossa localização aos responsáveis</button>
   <p id="status" class="status" role="status" aria-live="polite"></p>
 
   <div id="pronto" class="done" hidden>
@@ -93,15 +93,23 @@ textarea {
 </main>
 
 <script>
-/* ===== CONFIGURAÇÃO ===== */
-// Número que recebe a mensagem: só dígitos, com 55 + DDD. Ex.: "5531999998888".
-// Vazio = o WhatsApp deixa escolher o contato (bom para testar mandando para você mesmo).
-const TELEFONE = "";
-const NOME = "Lucas";
-/* ======================== */
-
+/* ===== CONFIGURAÇÃO (pela URL do QR code) =====
+   ?n=Nome da criança   (opcional; sem ele, a página fala "a criança")
+   ?t=5531999998888     (WhatsApp do responsável: 55 + DDD + número; sem ele, o WhatsApp
+                         deixa escolher o contato, bom para testar mandando para você mesmo)
+   ?d=FindLK01          (identificação da tag, vai no fim da mensagem)
+   Ex.: https://seu-site/achei/?n=Ana&t=5531999998888&d=FindLK01
+   ============================================== */
 const params = new URLSearchParams(location.search);
+const NOME = (params.get("n") || "").replace(/[<>]/g, "").trim().slice(0, 30);
+const TELEFONE = (params.get("t") || "").replace(/\D/g, "").slice(0, 15);
 const dispositivo = (params.get("d") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24);
+const QUEM = NOME || "a criança";
+
+if (NOME) {
+  document.title = "Achei " + NOME;
+  document.getElementById("titulo").textContent = "Você encontrou " + NOME + ". Obrigado!";
+}
 
 const btn = document.getElementById("btn-local");
 const statusEl = document.getElementById("status");
@@ -144,7 +152,7 @@ btn.addEventListener("click", () => {
       const lon = pos.coords.longitude.toFixed(6);
       const prec = Math.round(pos.coords.accuracy);
       const texto =
-        "🚨 Encontrei o " + NOME + "! Estou com ele aqui:\n" +
+        "🚨 Encontrei " + QUEM + "! Estamos aqui:\n" +
         "https://maps.google.com/?q=" + lat + "," + lon +
         "\n(precisão de uns " + prec + " m)" + rodape();
       setStatus("Localização encontrada (precisão de uns " + prec + " m). Abrindo o WhatsApp…");
@@ -167,7 +175,7 @@ btn.addEventListener("click", () => {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const onde = document.getElementById("onde").value.trim();
-  const texto = "🚨 Encontrei o " + NOME + "!" +
+  const texto = "🚨 Encontrei " + QUEM + "!" +
     (onde ? " Estamos aqui: " + onde : " Me liga para combinarmos onde encontrar.") + rodape();
   abrir(texto);
 });

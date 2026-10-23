@@ -1,6 +1,6 @@
-# FindLucas — alerta de separação (Fase 1: BLE + tela)
+# FindLK — alerta de separação (Fase 1: BLE + tela)
 
-Versão atual: **01** (anuncia como `FindLucas01`).
+Versão atual: **01** (anuncia como `FindLK01`).
 
 Firmware ESP-IDF para a **Waveshare ESP32-C6-LCD-1.47**. A tag fica com a criança. Os celulares
 dos responsáveis mandam um "heartbeat" por Bluetooth LE. Se o sinal some, a tela passa a
@@ -10,7 +10,7 @@ pedir ajuda a quem encontrar a criança e mostra um QR code.
 |---|---|---|
 | 1 | Estrutura do projeto, tela ST7789 + LVGL, fontes Latin-1, telas da UI em modo de teste | ✅ compilado e gravado |
 | 2 | LED WS2812: respiração no normal, sirene de PERDIDO, cores de proximidade | ✅ compilado e gravado |
-| 3 | NimBLE: anúncio `FindLucas01` com endereço privado, serviço GATT, pareamento com passkey na tela, proximidade por RSSI | ✅ compilado e gravado |
+| 3 | NimBLE: anúncio `FindLK01` com endereço privado, serviço GATT, pareamento com passkey na tela, proximidade por RSSI | ✅ compilado e gravado |
 | 4 | Máquina de estados (armar, PERDIDO, chegando, encontrado) | ✅ compilado e gravado |
 | 5 | Desarme automático ao ver o Wi-Fi de casa | ✅ compilado e gravado (desligado até configurar a rede) |
 
@@ -60,14 +60,14 @@ Para mudar um número ou texto, selecione a opção e tecle **Enter**. Ao sair, 
 Com a extensão ESP-IDF do VS Code, o mesmo menu aparece em forma gráfica pelo comando
 *ESP-IDF: SDK Configuration Editor*.
 
-Opções do projeto, em **FindLucas**:
+Opções do projeto, em **FindLK**:
 
 | Opção | Padrão | Para quê |
 |---|---|---|
 | Modo de teste da tela | desligado | Percorre todas as telas e cores do LED em ciclo, sem Bluetooth |
 | Diagnóstico ao ligar | desligado | Procura touch e IMU da versão Touch da placa |
 | Segundos sem heartbeat até PERDIDO | 20 | |
-| `LUCAS_QR_URL` | `https://example.com/achei` | URL do QR code na tela de PERDIDO |
+| `FINDLK_QR_URL` | `https://example.com/achei` | URL do QR code na tela de PERDIDO |
 | Tela → clock SPI | 40 MHz | Reduza se aparecer ruído na imagem |
 | Tela → deslocamento X/Y | 34 / 0 | Ajuste se faltar ou sobrar uma borda |
 | Tela → inverter cores | ligado | Painéis IPS ST7789 normalmente precisam |
@@ -78,7 +78,7 @@ Opções do projeto, em **FindLucas**:
 | LED → brilho ativo | 64 (de 255) | Pareamento e cores de proximidade (chegando) |
 | LED → brilho da sirene | 160 (de 255) | Vermelho/azul de PERDIDO |
 | LED → tempo de cada cor da sirene | 200 ms | Velocidade da sirene |
-| Bluetooth → nome anunciado | `FindLucas01` | Use o número da versão no nome |
+| Bluetooth → nome anunciado | `FindLK01` | Use o número da versão no nome |
 | Bluetooth → janela de pareamento | 60 s | Tempo liberado após segurar o BOOT |
 | Bluetooth → RSSI dos níveis | −85 / −75 / −65 / −55 dBm | Mínimo para aproximando / próximo / muito perto / sinal máximo |
 
@@ -122,7 +122,7 @@ Com o **modo de teste da tela** ligado no menuconfig (o Bluetooth fica desligado
 2. **PERDIDO** (8 s), com o LED em sirene vermelho/azul. A tela tem fundo preto,
    "CRIANÇA PERDIDA" em amarelo, o QR em caixa branca com 5 px de margem e "Escaneie para
    avisar aos pais". Só o QR fica branco, para a câmera focar. Aponte o celular para o QR:
-   ele deve abrir a `LUCAS_QR_URL`.
+   ele deve abrir a `FINDLK_QR_URL`.
 3. **Chegando** (5 níveis × 4 s). A tela mostra "Mãe está chegando:" em branco, a barra de
    proximidade com o nome do nível e, em amarelo, o símbolo ⚠ com "FIQUE PARADO". O nome
    alterna entre Mãe, Pai, Babá e Parente a cada ciclo. A cada nível o LED transita suavemente
@@ -198,7 +198,7 @@ o app enviar `A mãe`.
 ### Passo a passo
 
 1. Instale o **nRF Connect for Mobile** (Nordic Semiconductor) pela Play Store.
-2. **Scanner** → procure **FindLucas01** → **CONNECT**.
+2. **Scanner** → procure **FindLK01** → **CONNECT**.
 3. **Parear:** em **Client**, abra o menu ⋮ → **Bond**, ou simplesmente tente escrever numa
    característica: o Android pede o código. A tag mostra a tela de **Pareamento** com
    6 dígitos, e o LED respira em roxo. Digite esse código no celular. Se não for o primeiro
@@ -230,7 +230,7 @@ recusa sem pareamento, pareamento com passkey, armar, manter armado, PERDIDO em 
 CHEGANDO, leitura de proximidade, entradas inválidas, ENCONTRADO e DESARMAR.
 
 Como o PC não vê a tela, o firmware precisa imprimir o passkey no log serial: ligue
-**menuconfig → FindLucas → Bluetooth → TESTE: também imprimir o passkey no log serial**.
+**menuconfig → FindLK → Bluetooth → TESTE: também imprimir o passkey no log serial**.
 A tag não pode ter nenhum celular pareado (ou abra a janela segurando o BOOT).
 
 ```powershell
@@ -248,9 +248,26 @@ de verdade ser o primeiro:
 python -m esptool --chip esp32c6 -p COM3 erase-region 0x9000 0x6000
 ```
 
+## Página do QR code (`pagina-achei/`)
+
+A página que abre ao escanear o QR é genérica: serve para qualquer família. Publique o
+`index.html` em qualquer hospedagem com HTTPS (o GPS do navegador só funciona em HTTPS) e
+coloque a URL, com os parâmetros, em menuconfig → **FindLK → URL do QR code**:
+
+| Parâmetro | Exemplo | Uso |
+|---|---|---|
+| `n` | `Ana` | Nome da criança. Sem ele, a página fala "uma criança" |
+| `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
+| `d` | `FindLK01` | Identificação da tag, vai no fim da mensagem |
+
+Exemplo: `https://seu-site/achei/?n=Ana&t=5531999998888&d=FindLK01`
+
+Quem encontra a criança toca em um botão; a página pega a localização do celular dela e abre
+o WhatsApp com a mensagem pronta para o responsável. A página não guarda nada.
+
 ## Desarme pelo Wi-Fi de casa
 
-Em menuconfig → **FindLucas → Wi-Fi de casa**, coloque o nome da rede de casa (ou várias,
+Em menuconfig → **FindLK → Wi-Fi de casa**, coloque o nome da rede de casa (ou várias,
 separadas por `;`). A cada 30 s a tag procura redes Wi-Fi; ela só escaneia, não se conecta
 e não precisa da senha.
 
@@ -274,9 +291,9 @@ continuam reconhecendo a tag. O nome anunciado continua visível para qualquer u
 ## Versões
 
 O projeto usa git (`git log` mostra o histórico). A versão fica em `PROJECT_VER` no
-`CMakeLists.txt` da raiz e aparece no log ao ligar (`FindLucas01 versão 01`). Ao lançar uma
+`CMakeLists.txt` da raiz e aparece no log ao ligar (`FindLK01 versão 01`). Ao lançar uma
 versão nova, troque `PROJECT_VER` e o nome padrão em `main/Kconfig.projbuild` (ex.: `02` e
-`FindLucas02`). Como o `sdkconfig` guarda o nome antigo, troque também o nome no menuconfig
+`FindLK02`). Como o `sdkconfig` guarda o nome antigo, troque também o nome no menuconfig
 (Bluetooth → nome anunciado). Apagar o `sdkconfig` funciona, mas descarta os outros ajustes
 feitos no menuconfig, como a rede de casa. Os pareamentos já feitos continuam
 valendo: eles dependem da chave, não do nome.

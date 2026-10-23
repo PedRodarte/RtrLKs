@@ -11,7 +11,7 @@
 
 static const char *TAG = "main";
 
-#if CONFIG_LUCAS_DISPLAY_TEST
+#if CONFIG_FINDLK_DISPLAY_TEST
 static void display_test_loop(void)
 {
     static const char *const names[] = {"Mãe", "Pai", "Babá", "Parente"};
@@ -23,8 +23,8 @@ static void display_test_loop(void)
         led_show_normal();
         vTaskDelay(pdMS_TO_TICKS(8000));
 
-        ESP_LOGI(TAG, "teste: tela PERDIDO (QR: %s) (LED: sirene)", CONFIG_LUCAS_QR_URL);
-        ui_show_lost(CONFIG_LUCAS_QR_URL);
+        ESP_LOGI(TAG, "teste: tela PERDIDO (QR: %s) (LED: sirene)", CONFIG_FINDLK_QR_URL);
+        ui_show_lost(CONFIG_FINDLK_QR_URL);
         led_show_nobody();
         vTaskDelay(pdMS_TO_TICKS(8000));
 
@@ -61,19 +61,19 @@ static void init_nvs(void)
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "%s versão %s", CONFIG_LUCAS_BLE_NAME, esp_app_get_description()->version);
+    ESP_LOGI(TAG, "%s versão %s", CONFIG_FINDLK_BLE_NAME, esp_app_get_description()->version);
     init_nvs();
     ESP_ERROR_CHECK(display_init());
     ESP_ERROR_CHECK(led_init());
 
-#if CONFIG_LUCAS_HW_PROBE
+#if CONFIG_FINDLK_HW_PROBE
     char report[256];
     bool touch = hwprobe_touch(report, sizeof(report));
     ui_show_info(touch ? "Placa COM touch" : "Placa SEM touch", report);
     vTaskDelay(pdMS_TO_TICKS(10000));
 #endif
 
-#if CONFIG_LUCAS_DISPLAY_TEST
+#if CONFIG_FINDLK_DISPLAY_TEST
     display_test_loop();
 #else
     ESP_ERROR_CHECK(app_start());

@@ -48,7 +48,7 @@ esp_err_t display_init(void)
         .cs_gpio_num = PIN_CS,
         .dc_gpio_num = PIN_DC,
         .spi_mode = 0,
-        .pclk_hz = CONFIG_LUCAS_LCD_SPI_MHZ * 1000 * 1000,
+        .pclk_hz = CONFIG_FINDLK_LCD_SPI_MHZ * 1000 * 1000,
         .trans_queue_depth = 10,
         .lcd_cmd_bits = 8,
         .lcd_param_bits = 8,
@@ -57,7 +57,7 @@ esp_err_t display_init(void)
 
     esp_lcd_panel_dev_config_t panel_cfg = {
         .reset_gpio_num = PIN_RST,
-#if CONFIG_LUCAS_LCD_BGR
+#if CONFIG_FINDLK_LCD_BGR
         .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
 #else
         .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
@@ -67,10 +67,10 @@ esp_err_t display_init(void)
     ESP_RETURN_ON_ERROR(esp_lcd_new_panel_st7789(io, &panel_cfg, &s_panel), TAG, "st7789");
     ESP_RETURN_ON_ERROR(esp_lcd_panel_reset(s_panel), TAG, "reset");
     ESP_RETURN_ON_ERROR(esp_lcd_panel_init(s_panel), TAG, "init");
-#if CONFIG_LUCAS_LCD_INVERT_COLORS
+#if CONFIG_FINDLK_LCD_INVERT_COLORS
     ESP_RETURN_ON_ERROR(esp_lcd_panel_invert_color(s_panel, true), TAG, "invert");
 #endif
-    ESP_RETURN_ON_ERROR(esp_lcd_panel_set_gap(s_panel, CONFIG_LUCAS_LCD_X_GAP, CONFIG_LUCAS_LCD_Y_GAP), TAG, "gap");
+    ESP_RETURN_ON_ERROR(esp_lcd_panel_set_gap(s_panel, CONFIG_FINDLK_LCD_X_GAP, CONFIG_FINDLK_LCD_Y_GAP), TAG, "gap");
 
     const lvgl_port_cfg_t lvgl_cfg = ESP_LVGL_PORT_INIT_CONFIG();
     ESP_RETURN_ON_ERROR(lvgl_port_init(&lvgl_cfg), TAG, "lvgl port");
@@ -91,7 +91,7 @@ esp_err_t display_init(void)
     ESP_RETURN_ON_FALSE(lvgl_port_add_disp(&disp_cfg), ESP_FAIL, TAG, "lvgl display");
 
     ESP_LOGI(TAG, "ST7789 %dx%d pronto (gap %d,%d, %d MHz)", DISPLAY_H_RES, DISPLAY_V_RES,
-             CONFIG_LUCAS_LCD_X_GAP, CONFIG_LUCAS_LCD_Y_GAP, CONFIG_LUCAS_LCD_SPI_MHZ);
+             CONFIG_FINDLK_LCD_X_GAP, CONFIG_FINDLK_LCD_Y_GAP, CONFIG_FINDLK_LCD_SPI_MHZ);
     return ESP_OK;
 }
 

@@ -18,7 +18,7 @@
 #define TEXT_LEN           32
 #define TICK_MS            1000
 #define PASSKEY_TIMEOUT_US (60LL * 1000000) /* some a tela do passkey se o pareamento não terminar */
-#define LOST_TIMEOUT_US    ((int64_t)CONFIG_LUCAS_LOST_TIMEOUT_S * 1000000)
+#define LOST_TIMEOUT_US    ((int64_t)CONFIG_FINDLK_LOST_TIMEOUT_S * 1000000)
 
 typedef enum {
     EV_HEARTBEAT,
@@ -149,7 +149,7 @@ static void render(void)
         led_show_normal();
         break;
     case TAG_STATE_LOST:
-        ui_show_lost(CONFIG_LUCAS_QR_URL);
+        ui_show_lost(CONFIG_FINDLK_QR_URL);
         led_show_nobody();
         break;
     case TAG_STATE_COMING: {
@@ -277,7 +277,7 @@ static void check_timers(void)
     int64_t now = esp_timer_get_time();
 
     if ((s_state == TAG_STATE_ARMED || s_state == TAG_STATE_COMING) && now - s_last_heartbeat_us > LOST_TIMEOUT_US) {
-        ESP_LOGW(TAG, "%d s sem heartbeat", CONFIG_LUCAS_LOST_TIMEOUT_S);
+        ESP_LOGW(TAG, "%d s sem heartbeat", CONFIG_FINDLK_LOST_TIMEOUT_S);
         set_state(TAG_STATE_LOST);
     }
     if (s_overlay == OVERLAY_PASSKEY && now - s_overlay_since_us > PASSKEY_TIMEOUT_US) {

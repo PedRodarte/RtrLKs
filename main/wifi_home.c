@@ -73,19 +73,19 @@ static void wifi_task(void *arg)
                 at_home = true;
                 s_on_change(true);
             }
-        } else if (at_home && ++misses >= CONFIG_LUCAS_HOME_MISSES_TO_LEAVE) {
+        } else if (at_home && ++misses >= CONFIG_FINDLK_HOME_MISSES_TO_LEAVE) {
             /* Só sai de casa depois de algumas buscas seguidas sem ver a rede */
             at_home = false;
             s_on_change(false);
         }
-        vTaskDelay(pdMS_TO_TICKS(CONFIG_LUCAS_HOME_SCAN_PERIOD_S * 1000));
+        vTaskDelay(pdMS_TO_TICKS(CONFIG_FINDLK_HOME_SCAN_PERIOD_S * 1000));
     }
 }
 
 esp_err_t wifi_home_init(void (*on_change)(bool at_home))
 {
     s_on_change = on_change;
-    parse_ssids(CONFIG_LUCAS_HOME_SSIDS);
+    parse_ssids(CONFIG_FINDLK_HOME_SSIDS);
     if (s_ssid_count == 0) {
         ESP_LOGI(TAG, "nenhuma rede de casa configurada: desarme por Wi-Fi desligado");
         return ESP_OK;
@@ -102,7 +102,7 @@ esp_err_t wifi_home_init(void (*on_change)(bool at_home))
     ESP_RETURN_ON_ERROR(esp_wifi_set_mode(WIFI_MODE_STA), TAG, "modo");
     ESP_RETURN_ON_ERROR(esp_wifi_start(), TAG, "start");
 
-    ESP_LOGI(TAG, "procurando %d rede(s) de casa a cada %d s", s_ssid_count, CONFIG_LUCAS_HOME_SCAN_PERIOD_S);
+    ESP_LOGI(TAG, "procurando %d rede(s) de casa a cada %d s", s_ssid_count, CONFIG_FINDLK_HOME_SCAN_PERIOD_S);
     ESP_RETURN_ON_FALSE(xTaskCreate(wifi_task, "wifi_home", 4096, NULL, 3, NULL) == pdPASS, ESP_ERR_NO_MEM, TAG,
                         "task");
     return ESP_OK;

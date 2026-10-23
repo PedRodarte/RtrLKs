@@ -107,32 +107,32 @@ static void led_task(void *arg)
             wait_ms(UINT32_MAX);
             break;
         case LED_MODE_NORMAL:
-            if (CONFIG_LUCAS_LED_NORMAL_BRIGHTNESS == 0) {
+            if (CONFIG_FINDLK_LED_NORMAL_BRIGHTNESS == 0) {
                 led_strip_clear(s_strip);
                 wait_ms(UINT32_MAX);
             } else {
-                breathe(COLOR_GREEN, CONFIG_LUCAS_LED_NORMAL_BRIGHTNESS, CONFIG_LUCAS_LED_BREATH_PERIOD_MS);
+                breathe(COLOR_GREEN, CONFIG_FINDLK_LED_NORMAL_BRIGHTNESS, CONFIG_FINDLK_LED_BREATH_PERIOD_MS);
             }
             break;
         case LED_MODE_NOBODY:
-            set_color(COLOR_RED, CONFIG_LUCAS_LED_ALERT_BRIGHTNESS);
-            if (wait_ms(CONFIG_LUCAS_LED_SIREN_HALF_PERIOD_MS)) {
+            set_color(COLOR_RED, CONFIG_FINDLK_LED_ALERT_BRIGHTNESS);
+            if (wait_ms(CONFIG_FINDLK_LED_SIREN_HALF_PERIOD_MS)) {
                 break;
             }
-            set_color(COLOR_BLUE, CONFIG_LUCAS_LED_ALERT_BRIGHTNESS);
-            wait_ms(CONFIG_LUCAS_LED_SIREN_HALF_PERIOD_MS);
+            set_color(COLOR_BLUE, CONFIG_FINDLK_LED_ALERT_BRIGHTNESS);
+            wait_ms(CONFIG_FINDLK_LED_SIREN_HALF_PERIOD_MS);
             break;
         case LED_MODE_APPROACHING: {
             /* Transição suave, sem apagar, entre a cor do nível atual e a do anterior (mostra a
              * direção). Os níveis são lidos no início do ciclo, quando a cor é a do nível atual.
              * Sem mudança de nível ainda, as duas cores são iguais e a cor fica fixa. */
             proximity_t level = s_level;
-            crossfade(PROXIMITY_COLORS[level], PROXIMITY_COLORS[s_prev_level], CONFIG_LUCAS_LED_ACTIVE_BRIGHTNESS,
+            crossfade(PROXIMITY_COLORS[level], PROXIMITY_COLORS[s_prev_level], CONFIG_FINDLK_LED_ACTIVE_BRIGHTNESS,
                       PROXIMITY_PERIOD_MS[level]);
             break;
         }
         case LED_MODE_PAIRING:
-            breathe(COLOR_PURPLE, CONFIG_LUCAS_LED_ACTIVE_BRIGHTNESS, PAIRING_PERIOD_MS);
+            breathe(COLOR_PURPLE, CONFIG_FINDLK_LED_ACTIVE_BRIGHTNESS, PAIRING_PERIOD_MS);
             break;
         }
     }
@@ -152,7 +152,7 @@ esp_err_t led_init(void)
         .strip_gpio_num = PIN_LED,
         .max_leds = 1,
         .led_model = LED_MODEL_WS2812,
-#if CONFIG_LUCAS_LED_GRB
+#if CONFIG_FINDLK_LED_GRB
         .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_GRB,
 #else
         .color_component_format = LED_STRIP_COLOR_COMPONENT_FMT_RGB,

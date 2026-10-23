@@ -6,11 +6,11 @@
 
 #include "lvgl.h"
 
-#ifndef LUCAS_FONT_16
-#define LUCAS_FONT_16 1
+#ifndef FINDLK_FONT_16
+#define FINDLK_FONT_16 1
 #endif
 
-#if LUCAS_FONT_16
+#if FINDLK_FONT_16
 
 static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     /* U+0021 */
@@ -1236,7 +1236,7 @@ static const lv_font_fmt_txt_dsc_t font_dsc = {
     .bitmap_format = 0,
 };
 
-const lv_font_t lucas_font_16 = {
+const lv_font_t findlk_font_16 = {
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,
     .line_height = 19,
@@ -1256,4 +1256,4 @@ const lv_font_t lucas_font_16 = {
     .user_data = NULL,
 };
 
-#endif /* LUCAS_FONT_16 */
+#endif /* FINDLK_FONT_16 */

@@ -7,7 +7,7 @@ arquivos lv_font_montserrat_*.c do LVGL 9.
 Uso:
     pip install pillow
     python tools/gen_lvgl_font.py --ttf tools/fonts/Roboto-Variable.ttf --wght 400 --wdth 100 --size 16 \
-        --name lucas_font_16 --range 0x20-0x7E --range 0xA0-0xFF -o main/fonts/lucas_font_16.c
+        --name findlk_font_16 --range 0x20-0x7E --range 0xA0-0xFF -o main/fonts/findlk_font_16.c
 
 Sem --range, usa ASCII imprimível + Latin-1 (0x20-0x7E, 0xA0-0xFF).
 """

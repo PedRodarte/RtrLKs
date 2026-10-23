@@ -31,5 +31,5 @@ esp_err_t tag_ble_init(const tag_ble_callbacks_t *callbacks);
 /* Atualiza a característica Estado e notifica os celulares pareados inscritos */
 void tag_ble_set_state(tag_state_t state);
 
-/* Libera novos pareamentos por CONFIG_LUCAS_PAIRING_WINDOW_S segundos */
+/* Libera novos pareamentos por CONFIG_FINDLK_PAIRING_WINDOW_S segundos */
 void tag_ble_open_pairing_window(void);

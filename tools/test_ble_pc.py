@@ -3,7 +3,7 @@
 
 Requisitos:
   - Windows com Bluetooth LE; pip install bleak pyserial
-  - Firmware com CONFIG_LUCAS_TEST_LOG_PASSKEY=y (o script lê o passkey no log serial)
+  - Firmware com CONFIG_FINDLK_TEST_LOG_PASSKEY=y (o script lê o passkey no log serial)
   - Tag sem nenhum celular pareado (o PC precisa ser o "primeiro"), ou janela aberta pelo BOOT
   - Lista de Wi-Fi de casa vazia (em casa a tag não arma)
 
