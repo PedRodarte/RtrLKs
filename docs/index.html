@@ -71,7 +71,7 @@ textarea {
 <body>
 <main>
   <span class="tag">Criança perdida</span>
-  <h1 id="titulo">Você encontrou uma criança perdida. Obrigado!</h1>
+  <h1>Você encontrou uma criança perdida. Obrigado!</h1>
   <p class="lead">Os responsáveis já estão procurando. Com um toque, você manda para eles onde vocês estão.</p>
   <p class="ask">Por favor, fique com a criança aí mesmo até os responsáveis chegarem.</p>
 
@@ -93,23 +93,18 @@ textarea {
 </main>
 
 <script>
-/* ===== CONFIGURAÇÃO (pela URL do QR code) =====
-   ?n=Nome da criança   (opcional; sem ele, a página fala "a criança")
+/* ===== CONFIGURAÇÃO (pela URL do QR code, montada pela tag) =====
    ?t=5531999998888     (WhatsApp do responsável: 55 + DDD + número; sem ele, o WhatsApp
                          deixa escolher o contato, bom para testar mandando para você mesmo)
-   ?d=FindLK01          (identificação da tag, vai no fim da mensagem)
-   Ex.: https://seu-site/achei/?n=Ana&t=5531999998888&d=FindLK01
-   ============================================== */
+   ?d=FindLK01          (identificação da tag; não entra na mensagem)
+   ============================================================== */
 const params = new URLSearchParams(location.search);
-const NOME = (params.get("n") || "").replace(/[<>]/g, "").trim().slice(0, 30);
 const TELEFONE = (params.get("t") || "").replace(/\D/g, "").slice(0, 15);
-const dispositivo = (params.get("d") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24);
-const QUEM = NOME || "a criança";
 
-if (NOME) {
-  document.title = "Achei " + NOME;
-  document.getElementById("titulo").textContent = "Você encontrou " + NOME + ". Obrigado!";
-}
+const AGUARDO_E_TEMPO_REAL =
+  "Vou aguardar aqui!\n" +
+  "Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:\n" +
+  "📎 → Localização → Localização em tempo real → 1 hora";
 
 const btn = document.getElementById("btn-local");
 const statusEl = document.getElementById("status");
@@ -134,10 +129,6 @@ function abrir(texto) {
   location.href = url; // navegação, não pop-up: funciona mesmo depois da espera do GPS
 }
 
-function rodape() {
-  return dispositivo ? "\n(dispositivo " + dispositivo + ")" : "";
-}
-
 btn.addEventListener("click", () => {
   if (!("geolocation" in navigator) || !window.isSecureContext) {
     setStatus("Este navegador não liberou a localização. Escreva abaixo onde vocês estão.", true);
@@ -151,10 +142,12 @@ btn.addEventListener("click", () => {
       const lat = pos.coords.latitude.toFixed(6);
       const lon = pos.coords.longitude.toFixed(6);
       const prec = Math.round(pos.coords.accuracy);
+      // Sem "origin": o Maps traça a rota a partir de onde estiver quem abrir o link
+      const rota = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lon;
       const texto =
-        "🚨 Encontrei " + QUEM + "! Estamos aqui:\n" +
-        "https://maps.google.com/?q=" + lat + "," + lon +
-        "\n(precisão de uns " + prec + " m)" + rodape();
+        "Encontrei essa criança perdida! Segue a nossa localização:\n" +
+        "- " + rota + "\n" +
+        AGUARDO_E_TEMPO_REAL;
       setStatus("Localização encontrada (precisão de uns " + prec + " m). Abrindo o WhatsApp…");
       btn.disabled = false;
       abrir(texto);
@@ -175,8 +168,9 @@ btn.addEventListener("click", () => {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const onde = document.getElementById("onde").value.trim();
-  const texto = "🚨 Encontrei " + QUEM + "!" +
-    (onde ? " Estamos aqui: " + onde : " Me liga para combinarmos onde encontrar.") + rodape();
+  const texto = "Encontrei essa criança perdida! " +
+    (onde ? "Estamos aqui: " + onde : "Me liga para combinarmos onde nos encontrar.") + "\n" +
+    AGUARDO_E_TEMPO_REAL;
   abrir(texto);
 });
 </script>

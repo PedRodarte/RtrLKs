@@ -177,7 +177,7 @@ Serviço `a7c30001-1b8e-4f2a-9d6e-3c5b7e9f0a12`:
 | Chegando | `a7c30003-…` | Write (pareado) | Texto UTF-8: nome de quem está indo buscar, ex. `Pai` |
 | Comando | `a7c30004-…` | Write (pareado) | Texto `ENCONTRADO` ou `DESARMAR` |
 | Estado | `a7c30005-…` | Read + Notify (pareado) | 1 byte, valores da tabela de estados |
-| Configuração | `a7c30006-…` | Write + Read (pareado) | Escrita: `n=<nome>`, `t=<WhatsApp>` ou `u=<URL base>`, um por vez (vazio apaga). Leitura: URL completa do QR |
+| Configuração | `a7c30006-…` | Write + Read (pareado) | Escrita: `t=<WhatsApp>` ou `u=<URL base>`, um por vez (vazio apaga). Leitura: URL completa do QR |
 
 (`…` = o mesmo restante do UUID do serviço.) "Pareado" quer dizer conexão criptografada e
 autenticada por passkey. Sem isso, leituras e escritas são recusadas com *Insufficient
@@ -230,7 +230,7 @@ de RSSI no menuconfig.
 
 `tools/test_ble_pc.py` faz o papel do celular usando o Bluetooth do PC e confere 19 pontos:
 recusa sem pareamento, pareamento com passkey, armar, manter armado, PERDIDO em ~20 s,
-CHEGANDO, leitura de proximidade, entradas inválidas, configuração do QR (nome, telefone,
+CHEGANDO, leitura de proximidade, entradas inválidas, configuração do QR (telefone,
 validação), ENCONTRADO e DESARMAR.
 
 Como o PC não vê a tela, o firmware precisa imprimir o passkey no log serial: ligue
@@ -252,30 +252,38 @@ de verdade ser o primeiro:
 python -m esptool --chip esp32c6 -p COM3 erase-region 0x9000 0x6000
 ```
 
-## Página do QR code (`pagina-achei/`)
+## Página do QR code (`docs/`)
 
-A página que abre ao escanear o QR é genérica: serve para qualquer família. Publique o
-`index.html` em qualquer hospedagem com HTTPS (o GPS do navegador só funciona em HTTPS).
+A página que abre ao escanear o QR é genérica e gratuita: fica no **GitHub Pages** deste
+repositório, em `https://pedrodarte.github.io/RtrLKs/` (a URL padrão do QR). Para ativar:
+GitHub → **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `/docs`
+→ Save**. Em um ou dois minutos a página fica no ar. O GitHub Pages é grátis para
+repositórios públicos.
 
-**O app do celular escolhe o nome da criança e o telefone**, pela característica
-Configuração: `n=Ana`, `t=5531999998888` (e `u=https://...` para outra página). A tag guarda
-isso na memória e monta a URL do QR sozinha; não é preciso regravar o firmware. A URL
-padrão da página fica em menuconfig → **FindLK → URL padrão da página do QR**.
-
-Parâmetros que a tag coloca na URL:
+**O app do celular escolhe o telefone** pela característica Configuração: `t=5531999998888`
+(e `u=https://...` para usar outra página). A tag guarda isso na memória e monta a URL do QR;
+não é preciso regravar o firmware. A página não mostra nome de criança: por segurança, um
+estranho não deve saber o nome dela.
 
 | Parâmetro | Exemplo | Uso |
 |---|---|---|
-| `n` | `Ana` | Nome da criança. Sem ele, a página fala "uma criança" |
 | `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
-| `d` | `FindLK01` | Identificação da tag, vai no fim da mensagem |
+| `d` | `FindLK01` | Identificação da tag (não entra na mensagem) |
 
-Exemplo: `https://seu-site/achei?n=Ana&t=5531999998888&d=FindLK01`. Nomes com acento são
-codificados (`Ana Júlia` → `Ana%20J%C3%BAlia`). Quanto mais longa a URL, mais denso o QR;
-a tag ajusta o tamanho dos quadradinhos para caber na tela.
+Quem encontra a criança toca em um botão; a página pega a localização do celular dessa
+pessoa e abre o WhatsApp com esta mensagem pronta:
 
-Quem encontra a criança toca em um botão; a página pega a localização do celular dela e abre
-o WhatsApp com a mensagem pronta para o responsável. A página não guarda nada.
+> Encontrei essa criança perdida! Segue a nossa localização:
+> \- https://www.google.com/maps/dir/?api=1&destination=LAT,LON
+> Vou aguardar aqui!
+> Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:
+> 📎 → Localização → Localização em tempo real → 1 hora
+
+O link abre o Google Maps já com a **rota a partir de onde você estiver**. Nem o WhatsApp
+nem o Google permitem iniciar a localização em tempo real de outra pessoa, por isso a
+mensagem mostra o caminho. Se o navegador não liberar o GPS, a página pede para a pessoa
+escrever onde estão. Nada é guardado, e não há custo: GPS do navegador, link do Maps e
+`wa.me` são gratuitos.
 
 ## Desarme pelo Wi-Fi de casa
 

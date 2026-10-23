@@ -10,14 +10,12 @@
 #include "nvs.h"
 
 #define NVS_NAMESPACE "findlk"
-#define NAME_LEN      32
 #define PHONE_LEN     16
 #define URL_LEN       96
 
 static const char *TAG = "tag_config";
 
 static SemaphoreHandle_t s_lock;
-static char s_name[NAME_LEN + 1];
 static char s_phone[PHONE_LEN + 1];
 static char s_url[URL_LEN + 1];
 
@@ -58,11 +56,9 @@ esp_err_t tag_config_init(void)
     if (!s_lock) {
         return ESP_ERR_NO_MEM;
     }
-    load("name", s_name, sizeof(s_name));
     load("phone", s_phone, sizeof(s_phone));
     load("url", s_url, sizeof(s_url));
-    ESP_LOGI(TAG, "nome %s, telefone %s, url %s", s_name[0] ? "definido" : "vazio",
-             s_phone[0] ? "definido" : "vazio", s_url[0] ? s_url : "(padrão)");
+    ESP_LOGI(TAG, "telefone %s, url %s", s_phone[0] ? "definido" : "vazio", s_url[0] ? s_url : "(padrão)");
     return ESP_OK;
 }
 
@@ -102,12 +98,6 @@ esp_err_t tag_config_set(const char *assignment)
     size_t target_len;
     const char *nvs_key;
     switch (key) {
-    case 'n':
-        if (strlen(value) > NAME_LEN) {
-            return ESP_ERR_INVALID_ARG;
-        }
-        target = s_name, target_len = sizeof(s_name), nvs_key = "name";
-        break;
     case 't':
         if (!valid_phone(value)) {
             return ESP_ERR_INVALID_ARG;
@@ -134,24 +124,6 @@ esp_err_t tag_config_set(const char *assignment)
     return err;
 }
 
-/* Codifica para URL: letras, dígitos e -._~ passam; o resto (inclusive UTF-8) vira %XX */
-static size_t url_encode(char *out, size_t len, const char *in)
-{
-    static const char HEX[] = "0123456789ABCDEF";
-    size_t pos = 0;
-    for (const unsigned char *p = (const unsigned char *)in; *p && pos + 4 < len; p++) {
-        if (isalnum(*p) || strchr("-._~", *p)) {
-            out[pos++] = (char)*p;
-        } else {
-            out[pos++] = '%';
-            out[pos++] = HEX[*p >> 4];
-            out[pos++] = HEX[*p & 0x0F];
-        }
-    }
-    out[pos] = '\0';
-    return pos;
-}
-
 static size_t append(char *out, size_t len, size_t pos, const char *a, const char *b)
 {
     if (pos < len) {
@@ -163,14 +135,8 @@ static size_t append(char *out, size_t len, size_t pos, const char *a, const cha
 
 void tag_config_qr_url(char *out, size_t len)
 {
-    char name[NAME_LEN * 3 + 1];
     xSemaphoreTake(s_lock, portMAX_DELAY);
-    url_encode(name, sizeof(name), s_name);
     size_t pos = append(out, len, 0, s_url[0] ? s_url : CONFIG_FINDLK_QR_URL, "?");
-    if (name[0]) {
-        pos = append(out, len, pos, "n=", name);
-        pos = append(out, len, pos, "&", "");
-    }
     if (s_phone[0]) {
         pos = append(out, len, pos, "t=", s_phone);
         pos = append(out, len, pos, "&", "");

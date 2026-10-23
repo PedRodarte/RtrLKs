@@ -78,10 +78,10 @@ menu "FindLK"
 
     config FINDLK_QR_URL
         string "URL padrão da página do QR"
-        default "https://example.com/achei"
+        default "https://pedrodarte.github.io/RtrLKs/"
         help
-            Sem "?" no fim: a tag acrescenta n= (nome), t= (telefone) e d= (nome da tag).
-            O app do celular pode trocar a URL, o nome e o telefone pela característica
+            Sem "?" no fim: a tag acrescenta t= (telefone) e d= (nome da tag).
+            O app do celular pode trocar a URL e o telefone pela característica
             Configuração, sem regravar o firmware.
 
     menu "Bluetooth"
