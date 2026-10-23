@@ -273,11 +273,21 @@ estranho não deve saber o nome dela.
 Quem encontra a criança toca em um botão; a página pega a localização do celular dessa
 pessoa e abre o WhatsApp com esta mensagem pronta:
 
-> Encontrei essa criança perdida! Segue a nossa localização:
-> \- https://www.google.com/maps/dir/?api=1&destination=LAT,LON
-> Vou aguardar aqui!
-> Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:
-> 📎 → Localização → Localização em tempo real → 1 hora
+```text
+🚨 *CRIANÇA ENCONTRADA!* 🚨
+
+Encontrei essa criança perdida! Segue a nossa localização:
+📍 https://www.google.com/maps/dir/?api=1&destination=LAT,LON
+
+⏳ *Vou aguardar aqui!*
+
+Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:
+> 📎 → _Localização_ → _Localização em tempo real_ → _1 hora_
+```
+
+Os `*` e `_` são a formatação do WhatsApp (negrito e itálico) e o `>` vira citação; no
+WhatsApp eles não aparecem como símbolos. O link fica sozinho na linha, sem formatação,
+para continuar clicável.
 
 O link abre o Google Maps já com a **rota a partir de onde você estiver**. Nem o WhatsApp
 nem o Google permitem iniciar a localização em tempo real de outra pessoa, por isso a

@@ -101,10 +101,13 @@ textarea {
 const params = new URLSearchParams(location.search);
 const TELEFONE = (params.get("t") || "").replace(/\D/g, "").slice(0, 15);
 
+/* Formatação do WhatsApp: *negrito*, _itálico_, "> " no início da linha = citação.
+   O link fica sozinho e sem formatação na linha, para continuar clicável. */
+const TITULO = "🚨 *CRIANÇA ENCONTRADA!* 🚨\n\n";
 const AGUARDO_E_TEMPO_REAL =
-  "Vou aguardar aqui!\n" +
+  "⏳ *Vou aguardar aqui!*\n\n" +
   "Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:\n" +
-  "📎 → Localização → Localização em tempo real → 1 hora";
+  "> 📎 → _Localização_ → _Localização em tempo real_ → _1 hora_";
 
 const btn = document.getElementById("btn-local");
 const statusEl = document.getElementById("status");
@@ -145,8 +148,9 @@ btn.addEventListener("click", () => {
       // Sem "origin": o Maps traça a rota a partir de onde estiver quem abrir o link
       const rota = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lon;
       const texto =
+        TITULO +
         "Encontrei essa criança perdida! Segue a nossa localização:\n" +
-        "- " + rota + "\n" +
+        "📍 " + rota + "\n\n" +
         AGUARDO_E_TEMPO_REAL;
       setStatus("Localização encontrada (precisão de uns " + prec + " m). Abrindo o WhatsApp…");
       btn.disabled = false;
@@ -168,8 +172,8 @@ btn.addEventListener("click", () => {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const onde = document.getElementById("onde").value.trim();
-  const texto = "Encontrei essa criança perdida! " +
-    (onde ? "Estamos aqui: " + onde : "Me liga para combinarmos onde nos encontrar.") + "\n" +
+  const texto = TITULO + "Encontrei essa criança perdida! " +
+    (onde ? "Estamos aqui:\n📍 " + onde : "Me liga para combinarmos onde nos encontrar.") + "\n\n" +
     AGUARDO_E_TEMPO_REAL;
   abrir(texto);
 });
