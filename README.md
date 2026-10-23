@@ -223,6 +223,31 @@ O log serial (`idf.py -p COM3 monitor`) mostra cada evento: conexões, pareament
 mudanças de estado e de nível de proximidade com o RSSI médio. Use-o para calibrar os limites
 de RSSI no menuconfig.
 
+## Teste automatizado pelo PC (Windows)
+
+`tools/test_ble_pc.py` faz o papel do celular usando o Bluetooth do PC e confere 14 pontos:
+recusa sem pareamento, pareamento com passkey, armar, manter armado, PERDIDO em ~20 s,
+CHEGANDO, leitura de proximidade, entradas inválidas, ENCONTRADO e DESARMAR.
+
+Como o PC não vê a tela, o firmware precisa imprimir o passkey no log serial: ligue
+**menuconfig → FindLucas → Bluetooth → TESTE: também imprimir o passkey no log serial**.
+A tag não pode ter nenhum celular pareado (ou abra a janela segurando o BOOT).
+
+```powershell
+pip install bleak pyserial
+python tools/test_ble_pc.py --port COM3 --unpair
+```
+
+Resultado da versão 01 (23/10/2026): **14/14 OK**. PERDIDO após 21 s, proximidade nível 2
+(−72 dBm) com o PC a ~1 m. Um segundo pareamento sem o BOOT foi recusado, como esperado.
+
+Depois do teste, desligue a opção do passkey e apague os pareamentos da tag, para o celular
+de verdade ser o primeiro:
+
+```powershell
+python -m esptool --chip esp32c6 -p COM3 erase-region 0x9000 0x6000
+```
+
 ## Desarme pelo Wi-Fi de casa
 
 Em menuconfig → **FindLucas → Wi-Fi de casa**, coloque o nome da rede de casa (ou várias,

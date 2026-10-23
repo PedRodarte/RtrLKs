@@ -1,6 +1,7 @@
 #include "tag_ble.h"
 
 #include <ctype.h>
+#include <inttypes.h>
 #include <string.h>
 
 #include "esp_log.h"
@@ -305,7 +306,11 @@ static int gap_event(struct ble_gap_event *event, void *arg)
                 .action = BLE_SM_IOACT_DISP,
                 .passkey = esp_random() % 1000000,
             };
+#if CONFIG_LUCAS_TEST_LOG_PASSKEY
+            ESP_LOGW(TAG, "TESTE passkey=%06" PRIu32, io.passkey);
+#else
             ESP_LOGI(TAG, "passkey exibido na tela");
+#endif
             s_cb.on_passkey(io.passkey);
             ble_sm_inject_io(event->passkey.conn_handle, &io);
         }

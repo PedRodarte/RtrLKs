@@ -97,6 +97,13 @@ menu "FindLucas"
                 Com nenhum celular pareado, o primeiro pareia sem o botão. Depois disso,
                 novos pareamentos só são aceitos dentro desta janela.
 
+        config LUCAS_TEST_LOG_PASSKEY
+            bool "TESTE: também imprimir o passkey no log serial"
+            default n
+            help
+                Só para testes automatizados pelo PC (tools/test_ble_pc.py). Deixe
+                desligado no uso real: o passkey deve aparecer apenas na tela.
+
         config LUCAS_RSSI_APPROACHING
             int "RSSI mínimo para \"aproximando\" (dBm)"
             range -120 0
