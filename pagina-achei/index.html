@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Achei o Lucas</title>
+<style>
+/* Uma coluna, botão grande, nada de fontes externas: precisa abrir rápido
+   em qualquer celular, até com sinal fraco. */
+:root {
+  --bg: #fdf8f3;
+  --card: #ffffff;
+  --fg: #1d2330;
+  --muted: #5d6475;
+  --accent: #1f7a4d;     /* verde: "está tudo bem, ele foi encontrado" */
+  --accent-fg: #ffffff;
+  --alert: #c2410c;
+  --line: #e7dfd5;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171d; --card: #1d2129; --fg: #eef0f4; --muted: #a3a9b6;
+    --accent: #34b37a; --accent-fg: #08140e; --alert: #fb923c; --line: #2c313b;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font: 17px/1.5 var(--font);
+  padding-block: max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.tag {
+  align-self: flex-start; font-size: 13px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--alert);
+}
+h1 { font-size: 30px; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.lead { color: var(--muted); }
+.ask {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px; font-weight: 600;
+}
+button, .btn {
+  display: block; width: 100%; border: 0; border-radius: 14px; cursor: pointer;
+  padding: 18px 16px; font: 700 19px/1.2 var(--font); text-align: center; text-decoration: none;
+  background: var(--accent); color: var(--accent-fg);
+}
+button:disabled { opacity: .6; cursor: progress; }
+button:focus-visible, .btn:focus-visible, textarea:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
+.secondary { background: transparent; color: var(--fg); border: 2px solid var(--line); font-size: 17px; }
+.status { font-size: 15px; color: var(--muted); min-height: 1.5em; }
+.status.err { color: var(--alert); }
+label { font-weight: 600; font-size: 15px; }
+textarea {
+  width: 100%; min-height: 90px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--card); color: var(--fg); padding: 12px; font: 17px/1.4 var(--font);
+}
+.manual { display: flex; flex-direction: column; gap: 10px; }
+.done { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.small { font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Criança perdida</span>
+  <h1>Você encontrou o Lucas. Obrigado!</h1>
+  <p class="lead">Os pais dele já estão procurando. Com um toque, você manda para eles onde vocês estão.</p>
+  <p class="ask">Por favor, fique com ele aí mesmo até os pais chegarem.</p>
+
+  <button id="btn-local" type="button">Enviar nossa localização aos pais</button>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <div id="pronto" class="done" hidden>
+    <p>Pronto. Agora é só tocar em <strong>enviar</strong> no WhatsApp.</p>
+    <a id="link-wpp" class="btn" href="#">Abrir o WhatsApp de novo</a>
+  </div>
+
+  <form id="form-manual" class="manual" hidden>
+    <label for="onde">Sem a localização automática, escreva onde vocês estão:</label>
+    <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
+    <button type="submit" class="secondary">Enviar pelo WhatsApp</button>
+  </form>
+
+  <p class="small">Esta página não guarda nenhum dado. A localização vai só na mensagem que você mesmo envia.</p>
+</main>
+
+<script>
+/* ===== CONFIGURAÇÃO ===== */
+// Número que recebe a mensagem: só dígitos, com 55 + DDD. Ex.: "5531999998888".
+// Vazio = o WhatsApp deixa escolher o contato (bom para testar mandando para você mesmo).
+const TELEFONE = "";
+const NOME = "Lucas";
+/* ======================== */
+
+const params = new URLSearchParams(location.search);
+const dispositivo = (params.get("d") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24);
+
+const btn = document.getElementById("btn-local");
+const statusEl = document.getElementById("status");
+const pronto = document.getElementById("pronto");
+const linkWpp = document.getElementById("link-wpp");
+const form = document.getElementById("form-manual");
+
+function setStatus(msg, erro) {
+  statusEl.textContent = msg;
+  statusEl.classList.toggle("err", !!erro);
+}
+
+function urlWhatsApp(texto) {
+  const base = TELEFONE ? "https://wa.me/" + TELEFONE : "https://wa.me/";
+  return base + "?text=" + encodeURIComponent(texto);
+}
+
+function abrir(texto) {
+  const url = urlWhatsApp(texto);
+  linkWpp.href = url;
+  pronto.hidden = false;
+  location.href = url; // navegação, não pop-up: funciona mesmo depois da espera do GPS
+}
+
+function rodape() {
+  return dispositivo ? "\n(dispositivo " + dispositivo + ")" : "";
+}
+
+btn.addEventListener("click", () => {
+  if (!("geolocation" in navigator) || !window.isSecureContext) {
+    setStatus("Este navegador não liberou a localização. Escreva abaixo onde vocês estão.", true);
+    form.hidden = false;
+    return;
+  }
+  btn.disabled = true;
+  setStatus("Pegando a localização… se o celular perguntar, toque em Permitir.");
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lon = pos.coords.longitude.toFixed(6);
+      const prec = Math.round(pos.coords.accuracy);
+      const texto =
+        "🚨 Encontrei o " + NOME + "! Estou com ele aqui:\n" +
+        "https://maps.google.com/?q=" + lat + "," + lon +
+        "\n(precisão de uns " + prec + " m)" + rodape();
+      setStatus("Localização encontrada (precisão de uns " + prec + " m). Abrindo o WhatsApp…");
+      btn.disabled = false;
+      abrir(texto);
+    },
+    (err) => {
+      btn.disabled = false;
+      const msg = err.code === 1
+        ? "A localização não foi permitida. Tudo bem: escreva abaixo onde vocês estão."
+        : "Não consegui pegar a localização agora. Escreva abaixo onde vocês estão.";
+      setStatus(msg, true);
+      form.hidden = false;
+      document.getElementById("onde").focus();
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+  );
+});
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const onde = document.getElementById("onde").value.trim();
+  const texto = "🚨 Encontrei o " + NOME + "!" +
+    (onde ? " Estamos aqui: " + onde : " Me liga para combinarmos onde encontrar.") + rodape();
+  abrir(texto);
+});
+</script>
+</body>
+</html>

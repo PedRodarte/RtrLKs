@@ -1,0 +1,124 @@
+menu "LUCAS-TAG"
+
+    menu "Tela (ST7789 172x320)"
+
+        config LUCAS_LCD_SPI_MHZ
+            int "Clock SPI do LCD (MHz)"
+            range 1 80
+            default 40
+            help
+                Reduza (ex. 20) se aparecerem artefatos na imagem.
+
+        config LUCAS_LCD_X_GAP
+            int "Deslocamento X da área visível"
+            default 34
+
+        config LUCAS_LCD_Y_GAP
+            int "Deslocamento Y da área visível"
+            default 0
+
+        config LUCAS_LCD_INVERT_COLORS
+            bool "Inverter cores (necessário na maioria dos painéis IPS ST7789)"
+            default y
+
+        config LUCAS_LCD_BGR
+            bool "Ordem de cores BGR (troque se vermelho e azul aparecerem trocados)"
+            default n
+
+    endmenu
+
+    menu "LED (WS2812)"
+
+        config LUCAS_LED_GRB
+            bool "Ordem de cores GRB (troque se vermelho e verde aparecerem trocados)"
+            default n
+            help
+                O LED desta placa usa ordem RGB. A maioria dos WS2812 avulsos usa GRB.
+
+        config LUCAS_LED_NORMAL_BRIGHTNESS
+            int "Brilho máximo da respiração verde no modo normal (0 = apagado)"
+            range 0 255
+            default 16
+
+        config LUCAS_LED_BREATH_PERIOD_MS
+            int "Duração de uma respiração no modo normal (ms)"
+            range 1000 10000
+            default 4000
+
+        config LUCAS_LED_ACTIVE_BRIGHTNESS
+            int "Brilho do pareamento e das cores de proximidade (chegando)"
+            range 1 255
+            default 64
+
+        config LUCAS_LED_ALERT_BRIGHTNESS
+            int "Brilho da sirene de PERDIDO"
+            range 1 255
+            default 160
+
+        config LUCAS_LED_SIREN_HALF_PERIOD_MS
+            int "Tempo de cada cor da sirene vermelho/azul (ms)"
+            range 50 1000
+            default 200
+
+    endmenu
+
+    config LUCAS_HW_PROBE
+        bool "Diagnóstico ao ligar: procurar touch e IMU (versão Touch da placa)"
+        default n
+        help
+            Varre o I2C dos GPIO18/19 procurando o touch AXS5106L e a IMU QMI8658
+            e mostra o resultado na tela por 10 s.
+
+    config LUCAS_DISPLAY_TEST
+        bool "Modo de teste da tela (percorre todas as telas em ciclo, sem Bluetooth)"
+        default n
+        help
+            Mostra padrão de teste, tela de PERDIDO, tela "chegando" e passkey em ciclo,
+            com as cores do LED. Com esta opção ligada, o Bluetooth não é iniciado.
+
+    config LUCAS_QR_URL
+        string "URL do QR code na tela de PERDIDO"
+        default "https://example.com/achei"
+
+    menu "Bluetooth"
+
+        config LUCAS_BLE_NAME
+            string "Nome anunciado"
+            default "LUCAS-TAG"
+
+        config LUCAS_PAIRING_WINDOW_S
+            int "Tempo da janela de pareamento após segurar o BOOT (s)"
+            range 10 600
+            default 60
+            help
+                Com nenhum celular pareado, o primeiro pareia sem o botão. Depois disso,
+                novos pareamentos só são aceitos dentro desta janela.
+
+        config LUCAS_RSSI_APPROACHING
+            int "RSSI mínimo para \"aproximando\" (dBm)"
+            range -120 0
+            default -85
+
+        config LUCAS_RSSI_NEAR
+            int "RSSI mínimo para \"próximo\" (dBm)"
+            range -120 0
+            default -75
+
+        config LUCAS_RSSI_VERY_NEAR
+            int "RSSI mínimo para \"muito perto\" (dBm)"
+            range -120 0
+            default -65
+
+        config LUCAS_RSSI_MAX
+            int "RSSI mínimo para \"sinal máximo\" (dBm)"
+            range -120 0
+            default -55
+
+    endmenu
+
+    config LUCAS_LOST_TIMEOUT_S
+        int "Segundos sem heartbeat até entrar em PERDIDO"
+        range 5 600
+        default 20
+
+endmenu
