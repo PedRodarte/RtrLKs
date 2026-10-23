@@ -1,4 +1,4 @@
-menu "LUCAS-TAG"
+menu "FindLucas"
 
     menu "Tela (ST7789 172x320)"
 
@@ -84,7 +84,10 @@ menu "LUCAS-TAG"
 
         config LUCAS_BLE_NAME
             string "Nome anunciado"
-            default "LUCAS-TAG"
+            default "FindLucas01"
+            help
+                Use o número da versão no nome (FindLucas01, FindLucas02...) para saber
+                qual firmware está em cada tag.
 
         config LUCAS_PAIRING_WINDOW_S
             int "Tempo da janela de pareamento após segurar o BOOT (s)"

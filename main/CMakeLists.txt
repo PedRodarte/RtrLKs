@@ -14,4 +14,4 @@ idf_component_register(SRCS "main.c"
                             "fonts/lucas_font_icon_36.c"
                             "fonts/lucas_font_digits_40.c"
                        INCLUDE_DIRS "."
-                       PRIV_REQUIRES esp_lcd esp_driver_gpio esp_driver_spi esp_driver_i2c esp_timer bt nvs_flash)
+                       PRIV_REQUIRES esp_lcd esp_driver_gpio esp_driver_spi esp_driver_i2c esp_timer bt nvs_flash esp_app_format)

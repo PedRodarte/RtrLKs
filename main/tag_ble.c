@@ -339,12 +339,14 @@ static int gap_event(struct ble_gap_event *event, void *arg)
 
 static void on_sync(void)
 {
-    int rc = ble_hs_id_infer_auto(0, &s_own_addr_type);
+    /* Privacidade: anuncia com endereço privado resolvível (RPA), gerado pelo controlador e
+     * trocado periodicamente. Só celulares pareados (que receberam o IRK) reconhecem a tag. */
+    int rc = ble_hs_id_infer_auto(1, &s_own_addr_type);
     if (rc != 0) {
         ESP_LOGE(TAG, "endereço: %d", rc);
         return;
     }
-    ESP_LOGI(TAG, "anunciando como \"%s\"", ble_svc_gap_device_name());
+    ESP_LOGI(TAG, "anunciando como \"%s\" (endereço tipo %d)", ble_svc_gap_device_name(), s_own_addr_type);
     advertise();
 }
 

@@ -1,5 +1,6 @@
 #include "app.h"
 #include "display.h"
+#include "esp_app_desc.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -8,9 +9,9 @@
 #include "nvs_flash.h"
 #include "ui.h"
 
-#if CONFIG_LUCAS_DISPLAY_TEST
 static const char *TAG = "main";
 
+#if CONFIG_LUCAS_DISPLAY_TEST
 static void display_test_loop(void)
 {
     static const char *const names[] = {"Mãe", "Pai", "Babá", "Parente"};
@@ -60,6 +61,7 @@ static void init_nvs(void)
 
 void app_main(void)
 {
+    ESP_LOGI(TAG, "%s versão %s", CONFIG_LUCAS_BLE_NAME, esp_app_get_description()->version);
     init_nvs();
     ESP_ERROR_CHECK(display_init());
     ESP_ERROR_CHECK(led_init());

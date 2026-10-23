@@ -207,7 +207,7 @@ void ui_show_passkey(uint32_t passkey)
     add_label(scr, "Pareamento", &lucas_font_22, lv_color_white());
     add_label(scr, "Digite este código no celular:", &lucas_font_16, lv_color_white());
     add_label(scr, digits, &lucas_font_digits_40, lv_color_white());
-    add_label(scr, "LUCAS-TAG", &lucas_font_14, lv_palette_lighten(LV_PALETTE_BLUE, 2));
+    add_label(scr, CONFIG_LUCAS_BLE_NAME, &lucas_font_14, lv_palette_lighten(LV_PALETTE_BLUE, 2));
     show_end();
 }
 
