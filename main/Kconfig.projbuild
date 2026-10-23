@@ -77,8 +77,12 @@ menu "FindLK"
             com as cores do LED. Com esta opção ligada, o Bluetooth não é iniciado.
 
     config FINDLK_QR_URL
-        string "URL do QR code na tela de PERDIDO"
+        string "URL padrão da página do QR"
         default "https://example.com/achei"
+        help
+            Sem "?" no fim: a tag acrescenta n= (nome), t= (telefone) e d= (nome da tag).
+            O app do celular pode trocar a URL, o nome e o telefone pela característica
+            Configuração, sem regravar o firmware.
 
     menu "Bluetooth"
 

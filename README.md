@@ -177,10 +177,13 @@ Serviço `a7c30001-1b8e-4f2a-9d6e-3c5b7e9f0a12`:
 | Chegando | `a7c30003-…` | Write (pareado) | Texto UTF-8: nome de quem está indo buscar, ex. `Pai` |
 | Comando | `a7c30004-…` | Write (pareado) | Texto `ENCONTRADO` ou `DESARMAR` |
 | Estado | `a7c30005-…` | Read + Notify (pareado) | 1 byte, valores da tabela de estados |
+| Configuração | `a7c30006-…` | Write + Read (pareado) | Escrita: `n=<nome>`, `t=<WhatsApp>` ou `u=<URL base>`, um por vez (vazio apaga). Leitura: URL completa do QR |
 
 (`…` = o mesmo restante do UUID do serviço.) "Pareado" quer dizer conexão criptografada e
 autenticada por passkey. Sem isso, leituras e escritas são recusadas com *Insufficient
-Authentication*. Textos têm no máximo 32 bytes.
+Authentication*. Textos têm no máximo 32 bytes (100 na Configuração). Valores inválidos na
+Configuração (telefone que não seja só dígitos, URL sem `https://`, chave desconhecida) são
+recusados com *Value Not Allowed*.
 
 O nível de proximidade não é enviado pelo celular: a tag mede o RSSI de cada celular pareado
 conectado e usa o mais próximo, tanto para o LED quanto para a barra da tela "chegando". O
@@ -225,9 +228,10 @@ de RSSI no menuconfig.
 
 ## Teste automatizado pelo PC (Windows)
 
-`tools/test_ble_pc.py` faz o papel do celular usando o Bluetooth do PC e confere 14 pontos:
+`tools/test_ble_pc.py` faz o papel do celular usando o Bluetooth do PC e confere 19 pontos:
 recusa sem pareamento, pareamento com passkey, armar, manter armado, PERDIDO em ~20 s,
-CHEGANDO, leitura de proximidade, entradas inválidas, ENCONTRADO e DESARMAR.
+CHEGANDO, leitura de proximidade, entradas inválidas, configuração do QR (nome, telefone,
+validação), ENCONTRADO e DESARMAR.
 
 Como o PC não vê a tela, o firmware precisa imprimir o passkey no log serial: ligue
 **menuconfig → FindLK → Bluetooth → TESTE: também imprimir o passkey no log serial**.
@@ -238,8 +242,8 @@ pip install bleak pyserial
 python tools/test_ble_pc.py --port COM3 --unpair
 ```
 
-Resultado da versão 01 (23/10/2026): **14/14 OK**. PERDIDO após 21 s, proximidade nível 2
-(−72 dBm) com o PC a ~1 m. Um segundo pareamento sem o BOOT foi recusado, como esperado.
+Resultado da versão 01 (23/10/2026): **19/19 OK**. PERDIDO após 21 s, proximidade nível 3
+(−58 dBm) com o PC a ~1 m. Um segundo pareamento sem o BOOT foi recusado, como esperado.
 
 Depois do teste, desligue a opção do passkey e apague os pareamentos da tag, para o celular
 de verdade ser o primeiro:
@@ -251,8 +255,14 @@ python -m esptool --chip esp32c6 -p COM3 erase-region 0x9000 0x6000
 ## Página do QR code (`pagina-achei/`)
 
 A página que abre ao escanear o QR é genérica: serve para qualquer família. Publique o
-`index.html` em qualquer hospedagem com HTTPS (o GPS do navegador só funciona em HTTPS) e
-coloque a URL, com os parâmetros, em menuconfig → **FindLK → URL do QR code**:
+`index.html` em qualquer hospedagem com HTTPS (o GPS do navegador só funciona em HTTPS).
+
+**O app do celular escolhe o nome da criança e o telefone**, pela característica
+Configuração: `n=Ana`, `t=5531999998888` (e `u=https://...` para outra página). A tag guarda
+isso na memória e monta a URL do QR sozinha; não é preciso regravar o firmware. A URL
+padrão da página fica em menuconfig → **FindLK → URL padrão da página do QR**.
+
+Parâmetros que a tag coloca na URL:
 
 | Parâmetro | Exemplo | Uso |
 |---|---|---|
@@ -260,7 +270,9 @@ coloque a URL, com os parâmetros, em menuconfig → **FindLK → URL do QR code
 | `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
 | `d` | `FindLK01` | Identificação da tag, vai no fim da mensagem |
 
-Exemplo: `https://seu-site/achei/?n=Ana&t=5531999998888&d=FindLK01`
+Exemplo: `https://seu-site/achei?n=Ana&t=5531999998888&d=FindLK01`. Nomes com acento são
+codificados (`Ana Júlia` → `Ana%20J%C3%BAlia`). Quanto mais longa a URL, mais denso o QR;
+a tag ajusta o tamanho dos quadradinhos para caber na tela.
 
 Quem encontra a criança toca em um botão; a página pega a localização do celular dela e abre
 o WhatsApp com a mensagem pronta para o responsável. A página não guarda nada.

@@ -34,6 +34,7 @@ HEARTBEAT = "a7c30002" + BASE
 COMING = "a7c30003" + BASE
 COMMAND = "a7c30004" + BASE
 STATE = "a7c30005" + BASE
+CONFIG = "a7c30006" + BASE
 STATE_NAMES = {0: "DESARMADO", 1: "ARMADO", 2: "PERDIDO", 3: "CHEGANDO"}
 
 
@@ -186,7 +187,24 @@ async def main():
         except Exception as e:
             check("Texto com mais de 32 bytes recusado", True, str(e)[:60])
 
-        # 9. Encontrado -> 01; Desarmar -> 00
+        # 9. Configuração do QR pelo app: nome, telefone, validação, leitura da URL montada
+        await client.write_gatt_char(CONFIG, "n=Ana Júlia".encode(), response=True)
+        await client.write_gatt_char(CONFIG, b"t=5531999998888", response=True)
+        url = (await client.read_gatt_char(CONFIG)).decode()
+        check("Configuração: URL do QR com nome e telefone",
+              "?n=Ana%20J%C3%BAlia&t=5531999998888&d=" in url, url)
+        for bad, why in ((b"t=12ab", "telefone inválido"), (b"u=http://inseguro", "URL sem HTTPS"), (b"x=1", "chave desconhecida")):
+            try:
+                await client.write_gatt_char(CONFIG, bad, response=True)
+                check(f"Configuração recusa {why}", False, "foi aceito")
+            except Exception as e:
+                check(f"Configuração recusa {why}", True, str(e)[:50])
+        await client.write_gatt_char(CONFIG, b"n=", response=True)
+        await client.write_gatt_char(CONFIG, b"t=", response=True)
+        url = (await client.read_gatt_char(CONFIG)).decode()
+        check("Configuração: limpar nome e telefone", "n=" not in url and "t=" not in url, url)
+
+        # 10. Encontrado -> 01; Desarmar -> 00
         await client.write_gatt_char(COMMAND, b"ENCONTRADO", response=True)
         check("ENCONTRADO volta a ARMADO (01)", await wait_state(states, 1, 5) is not None)
         await client.write_gatt_char(COMMAND, b"DESARMAR", response=True)

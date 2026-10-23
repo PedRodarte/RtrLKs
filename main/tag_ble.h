@@ -24,6 +24,8 @@ typedef struct {
     void (*on_pairing_done)(bool success);
     /* phone_connected: há pelo menos um celular pareado conectado; level só vale nesse caso */
     void (*on_proximity)(bool phone_connected, proximity_t level);
+    /* O app mudou nome/telefone/URL do QR (já salvos em tag_config) */
+    void (*on_config_changed)(void);
 } tag_ble_callbacks_t;
 
 esp_err_t tag_ble_init(const tag_ble_callbacks_t *callbacks);

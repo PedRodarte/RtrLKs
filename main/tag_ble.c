@@ -16,19 +16,21 @@
 #include "nimble/nimble_port_freertos.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
+#include "tag_config.h"
 
 /* a7c300NN-1b8e-4f2a-9d6e-3c5b7e9f0a12, em ordem little-endian */
 #define TAG_UUID(n) \
     BLE_UUID128_INIT(0x12, 0x0a, 0x9f, 0x7e, 0x5b, 0x3c, 0x6e, 0x9d, 0x2a, 0x4f, 0x8e, 0x1b, (n), 0x00, 0xc3, 0xa7)
 
-#define TEXT_MAX           32 /* bytes UTF-8 aceitos numa escrita */
+#define TEXT_MAX           32  /* bytes UTF-8 aceitos numa escrita */
+#define CONFIG_TEXT_MAX    100 /* "u=https://..." da característica Configuração */
 #define MAX_CONNS          CONFIG_BT_NIMBLE_MAX_CONNECTIONS
 #define PROX_PERIOD_MS     1000
 #define RSSI_ALPHA         0.3f /* média móvel exponencial */
 #define RSSI_HYSTERESIS_DB 3
 #define PROX_DWELL_SAMPLES 3 /* um nível novo precisa se manter por 3 leituras (~3 s) */
 
-enum { CHR_HEARTBEAT, CHR_COMING, CHR_COMMAND, CHR_STATE };
+enum { CHR_HEARTBEAT, CHR_COMING, CHR_COMMAND, CHR_STATE, CHR_CONFIG };
 
 typedef struct {
     bool used;
@@ -45,6 +47,7 @@ static const ble_uuid128_t UUID_HEARTBEAT = TAG_UUID(0x02);
 static const ble_uuid128_t UUID_COMING = TAG_UUID(0x03);
 static const ble_uuid128_t UUID_COMMAND = TAG_UUID(0x04);
 static const ble_uuid128_t UUID_STATE = TAG_UUID(0x05);
+static const ble_uuid128_t UUID_CONFIG = TAG_UUID(0x06);
 
 static tag_ble_callbacks_t s_cb;
 static SemaphoreHandle_t s_lock;
@@ -114,6 +117,11 @@ static int chr_access(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
     const uintptr_t chr = (uintptr_t)arg;
 
     if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
+        if (chr == CHR_CONFIG) {
+            char url[200];
+            tag_config_qr_url(url, sizeof(url));
+            return os_mbuf_append(ctxt->om, url, strlen(url)) == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+        }
         uint8_t state = s_state;
         return os_mbuf_append(ctxt->om, &state, 1) == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
@@ -121,12 +129,13 @@ static int chr_access(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
         return BLE_ATT_ERR_UNLIKELY;
     }
 
+    const uint16_t max_len = chr == CHR_CONFIG ? CONFIG_TEXT_MAX : TEXT_MAX;
     uint16_t len = OS_MBUF_PKTLEN(ctxt->om);
-    if (len == 0 || len > TEXT_MAX) {
+    if (len == 0 || len > max_len) {
         return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
     }
-    char text[TEXT_MAX + 1];
-    if (ble_hs_mbuf_to_flat(ctxt->om, text, TEXT_MAX, &len) != 0) {
+    char text[CONFIG_TEXT_MAX + 1];
+    if (ble_hs_mbuf_to_flat(ctxt->om, text, max_len, &len) != 0) {
         return BLE_ATT_ERR_UNLIKELY;
     }
     /* Apps de teste às vezes mandam \n ou \0 no fim */
@@ -147,6 +156,12 @@ static int chr_access(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
         break;
     case CHR_COMMAND:
         s_cb.on_command(text);
+        break;
+    case CHR_CONFIG:
+        if (tag_config_set(text) != ESP_OK) {
+            return BLE_ATT_ERR_VALUE_NOT_ALLOWED;
+        }
+        s_cb.on_config_changed();
         break;
     default:
         return BLE_ATT_ERR_UNLIKELY;
@@ -171,6 +186,12 @@ static const struct ble_gatt_svc_def GATT_SERVICES[] = {
                 .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_READ_ENC | BLE_GATT_CHR_F_READ_AUTHEN |
                          BLE_GATT_CHR_F_NOTIFY,
                 .val_handle = &s_state_handle,
+            },
+            {
+                .uuid = &UUID_CONFIG.u,
+                .access_cb = chr_access,
+                .arg = (void *)CHR_CONFIG,
+                .flags = WRITE_PAIRED | BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_READ_ENC | BLE_GATT_CHR_F_READ_AUTHEN,
             },
             {0},
         },

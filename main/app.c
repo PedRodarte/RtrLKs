@@ -12,6 +12,7 @@
 #include "freertos/task.h"
 #include "led.h"
 #include "tag_ble.h"
+#include "tag_config.h"
 #include "ui.h"
 #include "wifi_home.h"
 
@@ -29,6 +30,7 @@ typedef enum {
     EV_PAIRING_DONE,
     EV_PROXIMITY,
     EV_HOME,
+    EV_CONFIG,
 } event_type_t;
 
 typedef struct {
@@ -117,6 +119,11 @@ static void on_proximity(bool connected, proximity_t level)
     post(&(event_t){.type = EV_PROXIMITY, .prox = {.connected = connected, .level = level}});
 }
 
+static void on_config_changed(void)
+{
+    post(&(event_t){.type = EV_CONFIG});
+}
+
 static void on_home(bool at_home)
 {
     post(&(event_t){.type = EV_HOME, .flag = at_home});
@@ -148,10 +155,13 @@ static void render(void)
         ui_show_off();
         led_show_normal();
         break;
-    case TAG_STATE_LOST:
-        ui_show_lost(CONFIG_FINDLK_QR_URL);
+    case TAG_STATE_LOST: {
+        static char url[200];
+        tag_config_qr_url(url, sizeof(url));
+        ui_show_lost(url);
         led_show_nobody();
         break;
+    }
     case TAG_STATE_COMING: {
         proximity_t level = s_phone_connected ? s_level : PROXIMITY_FAR;
         ui_show_approaching(s_coming_name, level);
@@ -262,6 +272,12 @@ static void handle(const event_t *ev)
         }
         break;
 
+    case EV_CONFIG:
+        if (s_state == TAG_STATE_LOST && s_overlay == OVERLAY_NONE) {
+            render(); /* QR novo */
+        }
+        break;
+
     case EV_HOME:
         s_at_home = ev->flag;
         ESP_LOGI(TAG, "%s", s_at_home ? "em casa: desarmando" : "saiu de casa: o próximo heartbeat arma");
@@ -311,6 +327,7 @@ esp_err_t app_start(void)
         .on_passkey = on_passkey,
         .on_pairing_done = on_pairing_done,
         .on_proximity = on_proximity,
+        .on_config_changed = on_config_changed,
     };
     ESP_RETURN_ON_ERROR(tag_ble_init(&callbacks), TAG, "bluetooth");
     ESP_RETURN_ON_ERROR(button_init(tag_ble_open_pairing_window), TAG, "botão");

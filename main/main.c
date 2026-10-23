@@ -7,6 +7,7 @@
 #include "hwprobe.h"
 #include "led.h"
 #include "nvs_flash.h"
+#include "tag_config.h"
 #include "ui.h"
 
 static const char *TAG = "main";
@@ -23,8 +24,10 @@ static void display_test_loop(void)
         led_show_normal();
         vTaskDelay(pdMS_TO_TICKS(8000));
 
-        ESP_LOGI(TAG, "teste: tela PERDIDO (QR: %s) (LED: sirene)", CONFIG_FINDLK_QR_URL);
-        ui_show_lost(CONFIG_FINDLK_QR_URL);
+        char url[200];
+        tag_config_qr_url(url, sizeof(url));
+        ESP_LOGI(TAG, "teste: tela PERDIDO (QR: %s) (LED: sirene)", url);
+        ui_show_lost(url);
         led_show_nobody();
         vTaskDelay(pdMS_TO_TICKS(8000));
 
@@ -63,6 +66,7 @@ void app_main(void)
 {
     ESP_LOGI(TAG, "%s versão %s", CONFIG_FINDLK_BLE_NAME, esp_app_get_description()->version);
     init_nvs();
+    ESP_ERROR_CHECK(tag_config_init());
     ESP_ERROR_CHECK(display_init());
     ESP_ERROR_CHECK(led_init());
 
