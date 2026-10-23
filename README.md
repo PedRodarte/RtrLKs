@@ -67,7 +67,7 @@ Opções do projeto, em **FindLK**:
 | Modo de teste da tela | desligado | Percorre todas as telas e cores do LED em ciclo, sem Bluetooth |
 | Diagnóstico ao ligar | desligado | Procura touch e IMU da versão Touch da placa |
 | Segundos sem heartbeat até PERDIDO | 20 | |
-| `FINDLK_QR_URL` | `https://example.com/achei` | URL do QR code na tela de PERDIDO |
+| URL padrão da página do QR | `https://pedrodarte.github.io/RtrLKs/` | O app pode trocar pela Configuração (`u=`) |
 | Tela → clock SPI | 40 MHz | Reduza se aparecer ruído na imagem |
 | Tela → deslocamento X/Y | 34 / 0 | Ajuste se faltar ou sobrar uma borda |
 | Tela → inverter cores | ligado | Painéis IPS ST7789 normalmente precisam |
