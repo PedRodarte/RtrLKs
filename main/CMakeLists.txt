@@ -6,6 +6,7 @@ idf_component_register(SRCS "main.c"
                             "hwprobe.c"
                             "tag_ble.c"
                             "button.c"
+                            "wifi_home.c"
                             "fonts/lucas_font_14.c"
                             "fonts/lucas_font_16.c"
                             "fonts/lucas_font_22.c"
@@ -14,4 +15,4 @@ idf_component_register(SRCS "main.c"
                             "fonts/lucas_font_icon_36.c"
                             "fonts/lucas_font_digits_40.c"
                        INCLUDE_DIRS "."
-                       PRIV_REQUIRES esp_lcd esp_driver_gpio esp_driver_spi esp_driver_i2c esp_timer bt nvs_flash esp_app_format)
+                       PRIV_REQUIRES esp_lcd esp_driver_gpio esp_driver_spi esp_driver_i2c esp_timer bt nvs_flash esp_app_format esp_wifi esp_netif esp_event)

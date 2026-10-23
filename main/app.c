@@ -13,6 +13,7 @@
 #include "led.h"
 #include "tag_ble.h"
 #include "ui.h"
+#include "wifi_home.h"
 
 #define TEXT_LEN           32
 #define TICK_MS            1000
@@ -27,6 +28,7 @@ typedef enum {
     EV_PASSKEY,
     EV_PAIRING_DONE,
     EV_PROXIMITY,
+    EV_HOME,
 } event_type_t;
 
 typedef struct {
@@ -58,6 +60,7 @@ static tag_state_t s_state = TAG_STATE_DISARMED;
 static int64_t s_last_heartbeat_us;
 static char s_coming_name[TEXT_LEN + 1];
 static bool s_phone_connected;
+static bool s_at_home;
 static proximity_t s_level = PROXIMITY_FAR;
 static overlay_t s_overlay = OVERLAY_NONE;
 static uint32_t s_passkey;
@@ -112,6 +115,11 @@ static void on_pairing_done(bool success)
 static void on_proximity(bool connected, proximity_t level)
 {
     post(&(event_t){.type = EV_PROXIMITY, .prox = {.connected = connected, .level = level}});
+}
+
+static void on_home(bool at_home)
+{
+    post(&(event_t){.type = EV_HOME, .flag = at_home});
 }
 
 /* ---------- Saída: tela e LED ---------- */
@@ -193,6 +201,9 @@ static void handle(const event_t *ev)
     case EV_HEARTBEAT:
         ESP_LOGI(TAG, "heartbeat de \"%s\"", ev->text);
         s_last_heartbeat_us = now;
+        if (s_at_home) {
+            break; /* em casa: heartbeats não armam */
+        }
         if (s_state == TAG_STATE_DISARMED) {
             set_state(TAG_STATE_ARMED);
         } else if (s_state == TAG_STATE_LOST) {
@@ -204,7 +215,7 @@ static void handle(const event_t *ev)
     case EV_COMING:
         ESP_LOGI(TAG, "\"%s\" avisou que está chegando", ev->text);
         s_last_heartbeat_us = now;
-        if (s_state == TAG_STATE_LOST || s_state == TAG_STATE_COMING) {
+        if (!s_at_home && (s_state == TAG_STATE_LOST || s_state == TAG_STATE_COMING)) {
             start_coming(ev->text);
         }
         break;
@@ -248,6 +259,14 @@ static void handle(const event_t *ev)
         s_level = ev->prox.level;
         if (s_state == TAG_STATE_COMING && s_overlay == OVERLAY_NONE) {
             render();
+        }
+        break;
+
+    case EV_HOME:
+        s_at_home = ev->flag;
+        ESP_LOGI(TAG, "%s", s_at_home ? "em casa: desarmando" : "saiu de casa: o próximo heartbeat arma");
+        if (s_at_home) {
+            set_state(TAG_STATE_DISARMED);
         }
         break;
     }
@@ -295,5 +314,6 @@ esp_err_t app_start(void)
     };
     ESP_RETURN_ON_ERROR(tag_ble_init(&callbacks), TAG, "bluetooth");
     ESP_RETURN_ON_ERROR(button_init(tag_ble_open_pairing_window), TAG, "botão");
+    ESP_RETURN_ON_ERROR(wifi_home_init(on_home), TAG, "wi-fi de casa");
     return ESP_OK;
 }

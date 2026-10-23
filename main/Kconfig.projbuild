@@ -119,6 +119,28 @@ menu "FindLucas"
 
     endmenu
 
+    menu "Wi-Fi de casa (desarme automático)"
+
+        config LUCAS_HOME_SSIDS
+            string "Redes de casa (SSIDs separados por ;)"
+            default ""
+            help
+                Ex.: "MinhaCasa;MinhaCasa 5G" (até 4). Ao ver uma delas, a tag desarma e
+                ignora heartbeats até sair de casa. Vazio = recurso desligado. A tag só
+                escaneia: não se conecta nem precisa da senha.
+
+        config LUCAS_HOME_SCAN_PERIOD_S
+            int "Intervalo entre buscas (s)"
+            range 10 600
+            default 30
+
+        config LUCAS_HOME_MISSES_TO_LEAVE
+            int "Buscas seguidas sem a rede para considerar que saiu de casa"
+            range 1 10
+            default 2
+
+    endmenu
+
     config LUCAS_LOST_TIMEOUT_S
         int "Segundos sem heartbeat até entrar em PERDIDO"
         range 5 600

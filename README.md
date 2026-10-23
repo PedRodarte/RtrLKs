@@ -1,4 +1,6 @@
-# LUCAS-TAG — alerta de separação (Fase 1: BLE + tela)
+# FindLucas — alerta de separação (Fase 1: BLE + tela)
+
+Versão atual: **01** (anuncia como `FindLucas01`).
 
 Firmware ESP-IDF para a **Waveshare ESP32-C6-LCD-1.47**. A tag fica com a criança. Os celulares
 dos responsáveis mandam um "heartbeat" por Bluetooth LE. Se o sinal some, a tela passa a
@@ -8,9 +10,9 @@ pedir ajuda a quem encontrar a criança e mostra um QR code.
 |---|---|---|
 | 1 | Estrutura do projeto, tela ST7789 + LVGL, fontes Latin-1, telas da UI em modo de teste | ✅ compilado e gravado |
 | 2 | LED WS2812: respiração no normal, sirene de PERDIDO, cores de proximidade | ✅ compilado e gravado |
-| 3 | NimBLE: anúncio `LUCAS-TAG`, serviço GATT, pareamento com passkey na tela, proximidade por RSSI | ✅ compilado e gravado |
+| 3 | NimBLE: anúncio `FindLucas01` com endereço privado, serviço GATT, pareamento com passkey na tela, proximidade por RSSI | ✅ compilado e gravado |
 | 4 | Máquina de estados (armar, PERDIDO, chegando, encontrado) | ✅ compilado e gravado |
-| 5 | Desarme automático ao ver o Wi-Fi de casa | a fazer |
+| 5 | Desarme automático ao ver o Wi-Fi de casa | ✅ compilado e gravado (desligado até configurar a rede) |
 
 ## Hardware
 
@@ -22,7 +24,8 @@ pedir ajuda a quem encontrar a criança e mostra um QR code.
 
 O LCD é um ST7789 de 172×320, sem touch e com cantos arredondados. A área visível é deslocada
 34 px em X. A placa testada tem um ESP32-C6FH8 (8 MB de flash). O projeto está configurado
-para 4 MB, o que funciona em qualquer versão da placa.
+para 4 MB, o que funciona em qualquer versão da placa. A tabela de partições
+(`partitions.csv`) reserva 3 MB para o firmware, que hoje ocupa ~1,8 MB.
 
 ## Compilar e gravar
 
@@ -57,7 +60,7 @@ Para mudar um número ou texto, selecione a opção e tecle **Enter**. Ao sair, 
 Com a extensão ESP-IDF do VS Code, o mesmo menu aparece em forma gráfica pelo comando
 *ESP-IDF: SDK Configuration Editor*.
 
-Opções do projeto, em **LUCAS-TAG**:
+Opções do projeto, em **FindLucas**:
 
 | Opção | Padrão | Para quê |
 |---|---|---|
@@ -75,11 +78,13 @@ Opções do projeto, em **LUCAS-TAG**:
 | LED → brilho ativo | 64 (de 255) | Pareamento e cores de proximidade (chegando) |
 | LED → brilho da sirene | 160 (de 255) | Vermelho/azul de PERDIDO |
 | LED → tempo de cada cor da sirene | 200 ms | Velocidade da sirene |
-| Bluetooth → nome anunciado | `LUCAS-TAG` | |
+| Bluetooth → nome anunciado | `FindLucas01` | Use o número da versão no nome |
 | Bluetooth → janela de pareamento | 60 s | Tempo liberado após segurar o BOOT |
 | Bluetooth → RSSI dos níveis | −85 / −75 / −65 / −55 dBm | Mínimo para aproximando / próximo / muito perto / sinal máximo |
 
-A lista de SSIDs de casa entra aqui na Etapa 5.
+| Wi-Fi de casa → redes | vazio (desligado) | SSIDs separados por `;`, até 4 |
+| Wi-Fi de casa → intervalo | 30 s | Tempo entre buscas |
+| Wi-Fi de casa → buscas para sair | 2 | Buscas seguidas sem a rede para considerar que saiu |
 
 ## LED
 
@@ -193,7 +198,7 @@ o app enviar `A mãe`.
 ### Passo a passo
 
 1. Instale o **nRF Connect for Mobile** (Nordic Semiconductor) pela Play Store.
-2. **Scanner** → procure **LUCAS-TAG** → **CONNECT**.
+2. **Scanner** → procure **FindLucas01** → **CONNECT**.
 3. **Parear:** em **Client**, abra o menu ⋮ → **Bond**, ou simplesmente tente escrever numa
    característica: o Android pede o código. A tag mostra a tela de **Pareamento** com
    6 dígitos, e o LED respira em roxo. Digite esse código no celular. Se não for o primeiro
@@ -218,7 +223,35 @@ O log serial (`idf.py -p COM3 monitor`) mostra cada evento: conexões, pareament
 mudanças de estado e de nível de proximidade com o RSSI médio. Use-o para calibrar os limites
 de RSSI no menuconfig.
 
-### Desarme pelo Wi-Fi de casa (Etapa 5)
+## Desarme pelo Wi-Fi de casa
 
-Quando a tag detectar um dos SSIDs configurados no menuconfig, ela volta a "desarmado"
-(estado `00`, LED apagado). Assim não dispara alarme dentro de casa.
+Em menuconfig → **FindLucas → Wi-Fi de casa**, coloque o nome da rede de casa (ou várias,
+separadas por `;`). A cada 30 s a tag procura redes Wi-Fi; ela só escaneia, não se conecta
+e não precisa da senha.
+
+- **Vendo uma rede de casa:** a tag vai para desarmado (estado `00`, tela e LED apagados),
+  mesmo se estiver em PERDIDO, e ignora heartbeats enquanto estiver em casa.
+- **Saindo de casa:** depois de 2 buscas seguidas sem ver a rede (~1 min), o próximo
+  heartbeat arma de novo.
+- **Só 2,4 GHz:** o ESP32-C6 não enxerga redes de 5 GHz. Se o roteador tiver nomes
+  separados (ex.: `Casa` e `Casa 5G`), use o de 2,4 GHz.
+- **Ao testar em casa** com o nRF Connect, deixe a lista vazia: em casa a tag não arma.
+
+O log mostra cada busca: `rede de casa "..." visível (RSSI -34)` ou `26 redes, nenhuma de casa`.
+
+## Privacidade
+
+A tag anuncia com um **endereço Bluetooth privado** (RPA), que muda a cada reinício e
+periodicamente. Quem só escaneia não consegue associar os anúncios ao mesmo aparelho pelo
+endereço. Os celulares pareados recebem a chave de identidade (IRK) no pareamento e
+continuam reconhecendo a tag. O nome anunciado continua visível para qualquer um.
+
+## Versões
+
+O projeto usa git (`git log` mostra o histórico). A versão fica em `PROJECT_VER` no
+`CMakeLists.txt` da raiz e aparece no log ao ligar (`FindLucas01 versão 01`). Ao lançar uma
+versão nova, troque `PROJECT_VER` e o nome padrão em `main/Kconfig.projbuild` (ex.: `02` e
+`FindLucas02`). Como o `sdkconfig` guarda o nome antigo, troque também o nome no menuconfig
+(Bluetooth → nome anunciado). Apagar o `sdkconfig` funciona, mas descarta os outros ajustes
+feitos no menuconfig, como a rede de casa. Os pareamentos já feitos continuam
+valendo: eles dependem da chave, não do nome.
