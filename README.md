@@ -13,6 +13,9 @@ pedir ajuda a quem encontrar a criança e mostra um QR code.
 | 3 | NimBLE: anúncio `FindLK01` com endereço privado, serviço GATT, pareamento com passkey na tela, proximidade por RSSI | ✅ compilado e gravado |
 | 4 | Máquina de estados (armar, PERDIDO, chegando, encontrado) | ✅ compilado e gravado |
 | 5 | Desarme automático ao ver o Wi-Fi de casa | ✅ compilado e gravado (desligado até configurar a rede) |
+| App | App Android (`android/`): pareamento, heartbeat em segundo plano, alarme, proximidade | ✅ compilado; falta testar em celular |
+
+Lista de tarefas e pendências: [TAREFAS.md](TAREFAS.md).
 
 ## Hardware
 
@@ -250,6 +253,30 @@ de verdade ser o primeiro:
 
 ```powershell
 python -m esptool --chip esp32c6 -p COM3 erase-region 0x9000 0x6000
+```
+
+## App Android (`android/`)
+
+App em Kotlin (Jetpack Compose), Android 8 ou mais novo. Instalação para teste:
+https://pedrodarte.github.io/RtrLKs/app/ (APK em `docs/app/`).
+
+- **Configuração:** nome do responsável (vai no heartbeat e aparece na tag) e WhatsApp (vai no QR, pela
+  característica Configuração).
+- **Pareamento:** procura a tag pelo UUID do serviço e pareia; o Android pede o código da tela da tag.
+- **Proteção:** serviço em primeiro plano ("FindLK protegendo") mantém a conexão, manda o heartbeat a cada
+  5 s com a tela apagada e reconecta sozinho.
+- **Alarme no celular:** toca e vibra até ser parado quando a tag avisa PERDIDO **ou** quando o celular fica
+  20 s sem conexão com a tag. Este segundo caso é o principal: longe demais, a conexão cai e o aviso da tag
+  não chega.
+- **Tela:** estado da tag, barra de proximidade (RSSI medido pelo celular), *Estou chegando*, *Encontrei a
+  criança*, *Desarmar* e *Desligar a proteção*.
+
+Compilar (Java 17 e Android SDK portáteis em `C:\Android`, sem precisar de administrador):
+
+```powershell
+$env:JAVA_HOME = "C:\Android\jdk17"; $env:ANDROID_HOME = "C:\Android\Sdk"
+cd android
+.\gradlew.bat assembleDebug      # APK em app\build\outputs\apk\debug\
 ```
 
 ## Página do QR code (`docs/`)
