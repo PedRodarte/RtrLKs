@@ -1,37 +1,28 @@
-/* Base comum: Roboto e só quatro estilos de texto (título, apoio, explicação, call to action). */
+/* Base comum: Roboto e só quatro estilos de texto (título, apoio, explicação, call to action).
+   Sempre no tema escuro, independente da configuração do celular. */
 :root {
-  --bg: #fdf8f3;
-  --card: #ffffff;
-  --fg: #1d2330;
-  --muted: #5d6475;
-  --accent: #1f7a4d;     /* verde: "está tudo bem, ela foi encontrada" */
-  --accent-fg: #ffffff;
-  --alert: #c2410c;
-  --alert-bg: #fff1e8;
-  --line: #e7dfd5;
-  --urgent-bg: #b42318;  /* faixa de urgência: branco sobre ele passa de 6:1 */
+  --bg: #14171d;
+  --card: #1d2129;
+  --fg: #eef0f4;
+  --muted: #a3a9b6;
+  --accent: #34b37a;     /* verde: "está tudo bem, ela foi encontrada" */
+  --accent-fg: #08140e;
+  --alert: #fb923c;
+  --alert-bg: #2a1d14;
+  --line: #2c313b;
+  --urgent-bg: #a1231a;  /* faixa de urgência: branco sobre ele passa de 6:1 */
   --urgent-fg: #ffffff;
-  --calm-bg: #e8f5ee;    /* cartão de tranquilidade */
-  --calm-fg: #14532d;
-  --calm-line: #b7e0c8;
-  --cta-border: #0e3d27;   /* verde escuro */
-  --cta-shadow: #0e3d27;
+  --calm-bg: #12261b;    /* cartão de tranquilidade */
+  --calm-fg: #c6f2d6;
+  --calm-line: #24543a;
+  --cta-border: #0b2e1e; /* verde escuro */
+  --cta-shadow: #000000;
   --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
   --text-title: 700 28px/1.2 var(--family);
   --text-support: 400 18px/1.45 var(--family);
   --text-body: 400 16px/1.5 var(--family);
   --text-cta: 700 18px/1.2 var(--family);
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14171d; --card: #1d2129; --fg: #eef0f4; --muted: #a3a9b6;
-    --accent: #34b37a; --accent-fg: #08140e; --alert: #fb923c; --alert-bg: #2a1d14; --line: #2c313b;
-    --urgent-bg: #a1231a; --urgent-fg: #ffffff;
-    --calm-bg: #12261b; --calm-fg: #c6f2d6; --calm-line: #24543a;
-    --cta-border: #0b2e1e; --cta-shadow: #000000;
-    color-scheme: dark;
-  }
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; } /* display:flex das caixas anularia o hidden */
