@@ -50,7 +50,7 @@ button, .btn, .cta {
   font: var(--text-cta);
 }
 button, .btn {
-  display: block; width: 100%; min-height: 56px; border: 0; border-radius: 14px; cursor: pointer;
+  display: block; width: 100%; min-height: 56px; border: 0; border-radius: 20px; cursor: pointer;
   padding: 18px 16px; text-align: center; text-decoration: none;
   background: var(--accent); color: var(--accent-fg);
 }
@@ -69,9 +69,9 @@ button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visibl
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 
 textarea {
-  width: 100%; min-height: 84px; border-radius: 12px; border: 1px solid var(--line);
+  width: 100%; min-height: 84px; border-radius: 10px; border: 1px solid var(--line);
   background: var(--card); color: var(--fg); padding: 12px;
 }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
 .status { min-height: 1.5em; }
 html { overflow-x: hidden; } /* faixas de largura total (100vw) não criam rolagem lateral */
