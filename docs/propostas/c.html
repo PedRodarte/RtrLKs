@@ -15,17 +15,17 @@ body { padding-top: 0; }
 .banner {
   /* ocupa a largura toda da tela, mesmo dentro do main centralizado */
   width: 100vw; margin-left: calc(50% - 50vw);
-  padding: max(22px, env(safe-area-inset-top)) max(20px, calc(50vw - 15rem + 4px)) 20px;
+  padding: max(16px, env(safe-area-inset-top)) max(20px, calc(50vw - 15rem + 4px)) 16px;
   background: var(--urgent-bg); color: var(--urgent-fg);
 }
 /* Selo branco: o emoji vermelho não some sobre a faixa vermelha */
 .badge { display: inline-block; background: #fff; border-radius: 10px; padding: 0 .12em; line-height: 1.25; }
 .calm {
   background: var(--calm-bg); color: var(--calm-fg); border: 1px solid var(--calm-line);
-  border-radius: 10px; padding: 12px;
+  border-radius: 10px; padding: var(--space);
 }
 .calm.support { color: var(--calm-fg); }
-.steps { display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0; }
+.steps { display: flex; flex-direction: column; gap: var(--space); list-style: none; padding: 0; }
 .step { display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: start; }
 .num {
   width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
@@ -35,17 +35,17 @@ body { padding-top: 0; }
 /* Passo 1: o campo ocupa a largura toda do cartão, para os exemplos caberem */
 .step-wide textarea { grid-column: 1 / -1; }
 .step p { padding-top: 4px; }
-.call { display: flex; flex-direction: column; gap: 10px; }
-.sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 14px; }
+.call { display: flex; flex-direction: column; gap: var(--space); }
+.sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 var(--space); }
 /* Status vazio não ocupa espaço: a linha fica no meio entre o botão e o cartão de ligar */
 .status:empty { display: none; }
-.footer { display: flex; flex-direction: column; gap: 10px; }
+.footer { display: flex; flex-direction: column; gap: var(--space); }
 </style>
 </head>
 <body>
 <main>
   <header class="banner">
-    <h1><span class="badge" aria-hidden="true">🚨</span> Criança está perdida: obrigado por ajudar!</h1>
+    <h1><span class="badge" aria-hidden="true">🚨</span> Criança perdida: obrigado por ajudar!</h1>
   </header>
 
   <p class="support calm">✅ Estamos procurando, fique parado e siga estes 3 passos, ou chame a polícia:</p>

@@ -24,6 +24,7 @@
   --text-support: 400 18px/1.45 var(--family);
   --text-body: 400 16px/1.5 var(--family);
   --text-cta: 700 18px/1.2 var(--family);
+  --space: 12px;          /* espaço vertical único entre todos os blocos */
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -35,7 +36,7 @@ body {
   padding-left: max(16px, env(safe-area-inset-left));
   padding-right: max(16px, env(safe-area-inset-right));
 }
-main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space); }
 p, ul, ol { margin: 0; }
 
 /* 1. Título */
@@ -73,6 +74,6 @@ textarea {
   width: 100%; min-height: calc(3 * 1.5em + 18px); resize: vertical; border-radius: 10px; border: 1px solid var(--line);
   background: var(--card); color: var(--fg); padding: 8px 10px;
 }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: var(--space); }
 .status { min-height: 1.5em; }
 html { overflow-x: hidden; } /* faixas de largura total (100vw) não criam rolagem lateral */
