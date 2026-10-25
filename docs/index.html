@@ -35,6 +35,9 @@ body { padding-top: 0; }
 .step p { padding-top: 8px; }
 .call { display: flex; flex-direction: column; gap: 12px; }
 .sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 18px; }
+/* Status vazio não ocupa espaço: a linha fica no meio entre o botão e o cartão de ligar */
+.status:empty { display: none; }
+.footer { display: flex; flex-direction: column; gap: 10px; }
 </style>
 </head>
 <body>
@@ -76,7 +79,10 @@ body { padding-top: 0; }
     </section>
   </div>
 
-  <p class="body muted">Você pode usar esta página sempre que quiser para atualizar a localização ou entrar em contato com os responsáveis. Ela não guarda nenhum dado e a localização vai só na mensagem que você envia.</p>
+  <div class="footer">
+    <p class="body muted">Você pode usar esta página sempre que quiser para atualizar a localização ou entrar em contato com os responsáveis.</p>
+    <p class="body muted">Ela não guarda nenhum dado e a localização vai só na mensagem que você envia.</p>
+  </div>
 </main>
 
 <script src="envio.js"></script>
