@@ -14,6 +14,8 @@
   --calm-bg: #e8f5ee;    /* cartão de tranquilidade */
   --calm-fg: #14532d;
   --calm-line: #b7e0c8;
+  --cta-border: #0e3d27;   /* verde escuro */
+  --cta-shadow: #0e3d27;
   --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
   --text-title: 700 28px/1.2 var(--family);
   --text-support: 400 18px/1.45 var(--family);
@@ -27,6 +29,7 @@
     --accent: #34b37a; --accent-fg: #08140e; --alert: #fb923c; --alert-bg: #2a1d14; --line: #2c313b;
     --urgent-bg: #a1231a; --urgent-fg: #ffffff;
     --calm-bg: #12261b; --calm-fg: #c6f2d6; --calm-line: #24543a;
+    --cta-border: #0b2e1e; --cta-shadow: #000000;
     color-scheme: dark;
   }
 }
@@ -59,6 +62,12 @@ button, .btn {
   background: var(--accent); color: var(--accent-fg);
 }
 button:disabled { opacity: .6; cursor: progress; }
+/* Ação principal: borda escura e sombra a 45° (deslocamento igual em x e y); ao tocar, "afunda" */
+.btn-primary {
+  border: 2px solid var(--cta-border);
+  box-shadow: 5px 5px 0 var(--cta-shadow);
+}
+.btn-primary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--cta-shadow); }
 /* Ação secundária: mesmo estilo de texto, mas com contorno para não competir com a principal */
 .btn-outline { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
 button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
