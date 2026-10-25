@@ -74,5 +74,19 @@
     );
   }
 
-  window.FindLK = { enviar, ultimaUrl: () => ultimaUrl };
+  /* Telefone para exibir e ligar: 5531999998888 -> "(31) 99999-8888" e "tel:+5531999998888".
+     Retorna null se a URL não tiver telefone. */
+  function telefone() {
+    if (!TELEFONE) {
+      return null;
+    }
+    let exibir = "+" + TELEFONE;
+    const br = TELEFONE.match(/^55(\d{2})(\d{4,5})(\d{4})$/);
+    if (br) {
+      exibir = "(" + br[1] + ") " + br[2] + "-" + br[3];
+    }
+    return { exibir, link: "tel:+" + TELEFONE };
+  }
+
+  window.FindLK = { enviar, ultimaUrl: () => ultimaUrl, telefone };
 })();

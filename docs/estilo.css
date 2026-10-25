@@ -59,6 +59,8 @@ button, .btn {
   background: var(--accent); color: var(--accent-fg);
 }
 button:disabled { opacity: .6; cursor: progress; }
+/* Ação secundária: mesmo estilo de texto, mas com contorno para não competir com a principal */
+.btn-outline { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
 button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 
