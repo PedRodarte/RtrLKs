@@ -270,14 +270,27 @@ estranho não deve saber o nome dela.
 | `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
 | `d` | `FindLK01` | Identificação da tag (não entra na mensagem) |
 
-Quem encontra a criança toca em um botão; a página pega a localização do celular dessa
-pessoa e abre o WhatsApp com esta mensagem pronta:
+Na página, quem encontrou a criança:
+
+- pode **descrever onde estão** num campo sempre visível (opcional): loja, andar, rua. A
+  descrição vai junto na mensagem, e ajuda mesmo com GPS (dentro de shopping ele erra o andar);
+- toca em **📍 Enviar nossa localização**: a página pega o GPS e abre o WhatsApp com a
+  mensagem pronta;
+- ou toca em **Enviar só o que escrevi**, sem localização, para quem não quer ou não
+  consegue liberar o GPS (por exemplo, uma pessoa idosa).
+
+A página reconhece iPhone e Android: antes do toque, mostra a dica de tocar em **Permitir**;
+se a localização for negada, mostra o passo a passo para liberar naquele aparelho (Ajustes
+do Site no Safari, cadeado no Chrome).
+
+Mensagem enviada:
 
 ```text
 🚨 *CRIANÇA ENCONTRADA!* 🚨
 
 Encontrei essa criança perdida! Segue a nossa localização:
 📍 https://www.google.com/maps/dir/?api=1&destination=LAT,LON
+📝 _na entrada da loja X, 2º piso_   (se a pessoa escreveu algo)
 
 ⏳ *Vou aguardar aqui!*
 
@@ -291,8 +304,7 @@ para continuar clicável.
 
 O link abre o Google Maps já com a **rota a partir de onde você estiver**. Nem o WhatsApp
 nem o Google permitem iniciar a localização em tempo real de outra pessoa, por isso a
-mensagem mostra o caminho. Se o navegador não liberar o GPS, a página pede para a pessoa
-escrever onde estão. Nada é guardado, e não há custo: GPS do navegador, link do Maps e
+mensagem mostra o caminho. Nada é guardado, e não há custo: GPS do navegador, link do Maps e
 `wa.me` são gratuitos.
 
 ## Desarme pelo Wi-Fi de casa

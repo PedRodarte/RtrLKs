@@ -67,6 +67,10 @@ textarea {
 .manual { display: flex; flex-direction: column; gap: 10px; }
 .done { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
 .small { font-size: 13px; color: var(--muted); }
+.opt { font-weight: 400; color: var(--muted); }
+.hint { font-size: 15px; color: var(--muted); margin-top: -8px; }
+.help { background: var(--card); border: 2px solid var(--alert); border-radius: 14px; padding: 14px 16px; font-size: 16px; }
+.help ol { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 </style>
 </head>
@@ -77,19 +81,23 @@ textarea {
   <p class="lead">Os responsáveis já estão procurando. Com um toque, você manda para eles onde vocês estão.</p>
   <p class="ask">Por favor, fique com a criança aí mesmo até os responsáveis chegarem.</p>
 
-  <button id="btn-local" type="button">Enviar nossa localização aos responsáveis</button>
+  <div class="manual">
+    <label for="onde">Onde vocês estão? <span class="opt">(opcional, ajuda a achar mais rápido)</span></label>
+    <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
+  </div>
+
+  <button id="btn-local" type="button">📍 Enviar nossa localização aos responsáveis</button>
+  <p id="dica" class="hint"></p>
   <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <div id="ajuda" class="help" hidden></div>
 
   <div id="pronto" class="done" hidden>
     <p>Pronto. Agora é só tocar em <strong>enviar</strong> no WhatsApp.</p>
     <a id="link-wpp" class="btn" href="#">Abrir o WhatsApp de novo</a>
   </div>
 
-  <form id="form-manual" class="manual" hidden>
-    <label for="onde">Sem a localização automática, escreva onde vocês estão:</label>
-    <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
-    <button type="submit" class="secondary">Enviar pelo WhatsApp</button>
-  </form>
+  <button id="btn-texto" type="button" class="secondary">Enviar só o que escrevi, sem localização</button>
 
   <p class="small">Esta página não guarda nenhum dado. A localização vai só na mensagem que você mesmo envia.</p>
 </main>
@@ -111,11 +119,41 @@ const AGUARDO_E_TEMPO_REAL =
   "Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:\n" +
   "> 📎 → _Localização_ → _Localização em tempo real_ → _1 hora_";
 
+/* iPad recente se apresenta como Mac, mas tem toque */
+const ua = navigator.userAgent;
+const IOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+const ANDROID = /Android/.test(ua);
+
+const DICA = IOS
+  ? "Quando o iPhone perguntar se pode usar sua localização, toque em <strong>Permitir</strong>."
+  : "Quando o celular perguntar se pode usar sua localização, toque em <strong>Permitir</strong>.";
+
+const AJUDA_IOS = `
+  <p><strong>Para liberar a localização no iPhone:</strong></p>
+  <ol>
+    <li>Toque em <strong>aA</strong> (ou no ícone ao lado do endereço) → <strong>Ajustes do Site</strong> → <strong>Localização</strong> → <strong>Permitir</strong>.</li>
+    <li>Se não aparecer: abra <strong>Ajustes</strong> → <strong>Privacidade e Segurança</strong> → <strong>Serviços de Localização</strong> (ligado) → <strong>Sites do Safari</strong> → <strong>Durante o Uso do App</strong>.</li>
+    <li>Volte aqui e toque de novo no botão verde.</li>
+  </ol>`;
+const AJUDA_ANDROID = `
+  <p><strong>Para liberar a localização no Android:</strong></p>
+  <ol>
+    <li>Toque no <strong>cadeado</strong> (ou nos ajustes) ao lado do endereço → <strong>Permissões</strong> → <strong>Localização</strong> → <strong>Permitir</strong>.</li>
+    <li>Confira se a <strong>Localização</strong> do celular está ligada (puxe a barra do topo para baixo).</li>
+    <li>Volte aqui e toque de novo no botão verde.</li>
+  </ol>`;
+const AJUDA_OUTROS = `
+  <p><strong>Para liberar a localização:</strong> nos ajustes do navegador, permita a localização para este site e toque de novo no botão verde.</p>`;
+
 const btn = document.getElementById("btn-local");
+const btnTexto = document.getElementById("btn-texto");
+const onde = document.getElementById("onde");
 const statusEl = document.getElementById("status");
+const ajuda = document.getElementById("ajuda");
 const pronto = document.getElementById("pronto");
 const linkWpp = document.getElementById("link-wpp");
-const form = document.getElementById("form-manual");
+
+document.getElementById("dica").innerHTML = DICA;
 
 function setStatus(msg, erro) {
   statusEl.textContent = msg;
@@ -134,14 +172,26 @@ function abrir(texto) {
   location.href = url; // navegação, não pop-up: funciona mesmo depois da espera do GPS
 }
 
+function descricao() {
+  const t = onde.value.trim();
+  return t ? "📝 _" + t.replace(/[_*~]/g, "") + "_\n" : "";
+}
+
+function pedirDescricao(msg) {
+  setStatus(msg, true);
+  ajuda.innerHTML = IOS ? AJUDA_IOS : ANDROID ? AJUDA_ANDROID : AJUDA_OUTROS;
+  ajuda.hidden = false;
+  onde.focus();
+}
+
 btn.addEventListener("click", () => {
   if (!("geolocation" in navigator) || !window.isSecureContext) {
-    setStatus("Este navegador não liberou a localização. Escreva abaixo onde vocês estão.", true);
-    form.hidden = false;
+    pedirDescricao("Este navegador não liberou a localização. Escreva acima onde vocês estão e toque em \"Enviar só o que escrevi\".");
     return;
   }
   btn.disabled = true;
-  setStatus("Pegando a localização… se o celular perguntar, toque em Permitir.");
+  ajuda.hidden = true;
+  setStatus("Pegando a localização…");
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const lat = pos.coords.latitude.toFixed(6);
@@ -152,7 +202,8 @@ btn.addEventListener("click", () => {
       const texto =
         TITULO +
         "Encontrei essa criança perdida! Segue a nossa localização:\n" +
-        "📍 " + rota + "\n\n" +
+        "📍 " + rota + "\n" +
+        descricao() + "\n" +
         AGUARDO_E_TEMPO_REAL;
       setStatus("Localização encontrada (precisão de uns " + prec + " m). Abrindo o WhatsApp…");
       btn.disabled = false;
@@ -160,23 +211,21 @@ btn.addEventListener("click", () => {
     },
     (err) => {
       btn.disabled = false;
-      const msg = err.code === 1
-        ? "A localização não foi permitida. Tudo bem: escreva abaixo onde vocês estão."
-        : "Não consegui pegar a localização agora. Escreva abaixo onde vocês estão.";
-      setStatus(msg, true);
-      form.hidden = false;
-      document.getElementById("onde").focus();
+      pedirDescricao(err.code === 1
+        ? "A localização não foi liberada. Veja abaixo como liberar, ou escreva acima onde vocês estão."
+        : "Não consegui pegar a localização agora. Tente de novo ou escreva acima onde vocês estão.");
     },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
   );
 });
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const onde = document.getElementById("onde").value.trim();
-  const texto = TITULO + "Encontrei essa criança perdida! " +
-    (onde ? "Estamos aqui:\n📍 " + onde : "Me liga para combinarmos onde nos encontrar.") + "\n\n" +
-    AGUARDO_E_TEMPO_REAL;
+btnTexto.addEventListener("click", () => {
+  if (!onde.value.trim()) {
+    setStatus("Escreva acima onde vocês estão (ex.: loja, andar, rua) e toque de novo.", true);
+    onde.focus();
+    return;
+  }
+  const texto = TITULO + "Encontrei essa criança perdida! Estamos aqui:\n" + descricao() + "\n" + AGUARDO_E_TEMPO_REAL;
   abrir(texto);
 });
 </script>
