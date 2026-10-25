@@ -18,6 +18,8 @@ body { padding-top: 0; }
   padding: max(22px, env(safe-area-inset-top)) max(20px, calc(50vw - 15rem + 4px)) 20px;
   background: var(--urgent-bg); color: var(--urgent-fg);
 }
+/* Selo branco: o emoji vermelho não some sobre a faixa vermelha */
+.badge { display: inline-block; background: #fff; border-radius: 10px; padding: 0 .12em; line-height: 1.25; }
 .calm {
   background: var(--calm-bg); color: var(--calm-fg); border: 1px solid var(--calm-line);
   border-radius: 14px; padding: 16px;
@@ -36,10 +38,10 @@ body { padding-top: 0; }
 <body>
 <main>
   <header class="banner">
-    <h1>⚠ Você encontrou uma criança perdida</h1>
+    <h1><span class="badge" aria-hidden="true">🚨</span> Você encontrou uma criança perdida, obrigado por ajudar!</h1>
   </header>
 
-  <p class="support calm">✓ Obrigado! Os responsáveis já estão procurando. Fique com a criança aí mesmo até eles chegarem ou chame a polícia.</p>
+  <p class="support calm">✅ Os responsáveis já estão procurando. Fique com a criança aí mesmo até eles chegarem ou chame a polícia.</p>
 
   <p class="body">Para ajudar a encontrar mais rápido, são apenas 3 passos:</p>
   <ol class="steps">
