@@ -35,7 +35,7 @@ body {
   padding-left: max(16px, env(safe-area-inset-left));
   padding-right: max(16px, env(safe-area-inset-right));
 }
-main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 p, ul, ol { margin: 0; }
 
 /* 1. Título */
@@ -69,10 +69,10 @@ button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visibl
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 
 textarea {
-  /* altura de 3 linhas (16px × 1,5) + espaçamento interno */
-  width: 100%; min-height: calc(3 * 1.5em + 26px); resize: vertical; border-radius: 10px; border: 1px solid var(--line);
-  background: var(--card); color: var(--fg); padding: 12px;
+  /* altura de 3 linhas (16px × 1,5) + espaçamento interno + borda */
+  width: 100%; min-height: calc(3 * 1.5em + 18px); resize: vertical; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--card); color: var(--fg); padding: 8px 10px;
 }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
 .status { min-height: 1.5em; }
 html { overflow-x: hidden; } /* faixas de largura total (100vw) não criam rolagem lateral */

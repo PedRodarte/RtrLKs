@@ -22,21 +22,21 @@ body { padding-top: 0; }
 .badge { display: inline-block; background: #fff; border-radius: 10px; padding: 0 .12em; line-height: 1.25; }
 .calm {
   background: var(--calm-bg); color: var(--calm-fg); border: 1px solid var(--calm-line);
-  border-radius: 10px; padding: 16px;
+  border-radius: 10px; padding: 12px;
 }
 .calm.support { color: var(--calm-fg); }
-.steps { display: flex; flex-direction: column; gap: 12px; list-style: none; padding: 0; }
-.step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+.steps { display: flex; flex-direction: column; gap: 8px; list-style: none; padding: 0; }
+.step { display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: start; }
 .num {
-  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
   background: var(--alert-bg); color: var(--alert); font: var(--text-cta);
 }
-.step label { display: block; padding-top: 8px; }
+.step label { display: block; padding-top: 4px; }
 /* Passo 1: o campo ocupa a largura toda do cartão, para os exemplos caberem */
 .step-wide textarea { grid-column: 1 / -1; }
-.step p { padding-top: 8px; }
-.call { display: flex; flex-direction: column; gap: 12px; }
-.sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 18px; }
+.step p { padding-top: 4px; }
+.call { display: flex; flex-direction: column; gap: 10px; }
+.sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 14px; }
 /* Status vazio não ocupa espaço: a linha fica no meio entre o botão e o cartão de ligar */
 .status:empty { display: none; }
 .footer { display: flex; flex-direction: column; gap: 10px; }
