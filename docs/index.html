@@ -7,180 +7,82 @@
 <title>Achei uma criança</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- display=swap: o texto aparece na hora com a fonte do sistema e troca para Roboto ao carregar -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
 <style>
-/* Uma coluna e botão grande: precisa ser rápida de entender em qualquer celular.
-   Só quatro estilos de texto: título, apoio, explicação e call to action. */
-:root {
-  --bg: #fdf8f3;
-  --card: #ffffff;
-  --fg: #1d2330;
-  --muted: #5d6475;
-  --accent: #1f7a4d;     /* verde: "está tudo bem, ela foi encontrada" */
-  --accent-fg: #ffffff;
-  --alert: #c2410c;
-  --line: #e7dfd5;
-  --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --text-title: 700 28px/1.2 var(--family);
-  --text-support: 400 18px/1.45 var(--family);
-  --text-body: 400 16px/1.5 var(--family);
-  --text-cta: 700 18px/1.2 var(--family);
-  color-scheme: light;
+/* Página do QR (proposta C escolhida): urgência (faixa vermelha) + tranquilidade (cartão verde) + passos numerados */
+body { padding-top: 0; }
+.banner {
+  /* ocupa a largura toda da tela, mesmo dentro do main centralizado */
+  width: 100vw; margin-left: calc(50% - 50vw);
+  padding: max(22px, env(safe-area-inset-top)) max(20px, calc(50vw - 15rem + 4px)) 20px;
+  background: var(--urgent-bg); color: var(--urgent-fg);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14171d; --card: #1d2129; --fg: #eef0f4; --muted: #a3a9b6;
-    --accent: #34b37a; --accent-fg: #08140e; --alert: #fb923c; --line: #2c313b;
-    color-scheme: dark;
-  }
+.calm {
+  background: var(--calm-bg); color: var(--calm-fg); border: 1px solid var(--calm-line);
+  border-radius: 14px; padding: 16px;
 }
-* { box-sizing: border-box; }
-/* As caixas usam display:flex, que anularia o atributo hidden */
-[hidden] { display: none !important; }
-html, body { margin: 0; }
-body {
-  background: var(--bg); color: var(--fg); font: var(--text-body);
-  padding-block: max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-bottom));
-  padding-left: max(16px, env(safe-area-inset-left));
-  padding-right: max(16px, env(safe-area-inset-right));
+.calm.support { color: var(--calm-fg); }
+.steps { display: flex; flex-direction: column; gap: 12px; list-style: none; padding: 0; }
+.step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+.num {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--alert-bg); color: var(--alert); font: var(--text-cta);
 }
-main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
-p, ul { margin: 0; }
-
-/* 1. Título */
-h1 { font: var(--text-title); margin: 0; text-wrap: balance; }
-/* 2. Texto de apoio */
-.support { font: var(--text-support); color: var(--muted); }
-/* 3. Texto da explicação: passos, campo, status e rodapé */
-.steps, .done, .status, .footer, textarea, label { font: var(--text-body); }
-.steps {
-  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.steps ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.steps label { display: block; margin-bottom: 8px; }
-textarea {
-  width: 100%; min-height: 90px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--bg); color: var(--fg); padding: 12px;
-}
-.status { color: var(--muted); min-height: 1.5em; }
-.done { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.footer { color: var(--muted); }
-/* 4. Call to action */
-button, .btn {
-  display: block; width: 100%; border: 0; border-radius: 14px; cursor: pointer;
-  padding: 18px 16px; font: var(--text-cta); text-align: center; text-decoration: none;
-  background: var(--accent); color: var(--accent-fg);
-}
-button:disabled { opacity: .6; cursor: progress; }
-button:focus-visible, .btn:focus-visible, textarea:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
-@media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
+.step label { display: block; margin-bottom: 8px; padding-top: 8px; }
+.step p { padding-top: 8px; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Você encontrou uma criança perdida. Obrigado!</h1>
-  <p class="support">Os responsáveis já estão procurando. Fique com a criança aí mesmo até os responsáveis chegarem ou chame a polícia.</p>
+  <header class="banner">
+    <h1>⚠ Você encontrou uma criança perdida</h1>
+  </header>
 
-  <section class="steps">
-    <p>Para ajudar a encontrar mais rápido, são apenas 3 passos:</p>
-    <ul>
-      <li>
-        <label for="onde">Passo 1: descreva onde vocês estão</label>
+  <p class="support calm">✓ Obrigado! Os responsáveis já estão procurando. Fique com a criança aí mesmo até eles chegarem ou chame a polícia.</p>
+
+  <p class="body">Para ajudar a encontrar mais rápido, são apenas 3 passos:</p>
+  <ol class="steps">
+    <li class="card step">
+      <span class="num" aria-hidden="true">1</span>
+      <div>
+        <label for="onde">Descreva onde vocês estão</label>
         <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
-      </li>
-      <li>Passo 2: lembre de aceitar compartilhar a localização ao enviar no passo 3</li>
-      <li>Passo 3: clique no botão abaixo</li>
-    </ul>
-  </section>
+      </div>
+    </li>
+    <li class="card step">
+      <span class="num" aria-hidden="true">2</span>
+      <p class="body">Quando o celular perguntar, toque em Permitir para mandar a localização</p>
+    </li>
+    <li class="card step">
+      <span class="num" aria-hidden="true">3</span>
+      <p class="body">Toque no botão verde e depois em enviar no WhatsApp</p>
+    </li>
+  </ol>
 
   <button id="btn-enviar" type="button">📍 Enviar aos responsáveis pelo WhatsApp</button>
   <p id="status" class="status" role="status" aria-live="polite"></p>
+  <a id="link-wpp" class="btn" href="#" hidden>Abrir o WhatsApp de novo</a>
 
-  <div id="pronto" class="done" hidden>
-    <p>Pronto. Agora é só tocar em enviar no WhatsApp.</p>
-    <a id="link-wpp" class="btn" href="#">Abrir o WhatsApp de novo</a>
-  </div>
-
-  <p class="footer">Você pode usar esta página sempre que quiser. Ela não guarda nenhum dado. A localização vai só na mensagem que você mesmo envia.</p>
+  <p class="body muted">Sem cadastro e sem app. Você pode usar esta página sempre que quiser: ela não guarda nenhum dado, e a localização vai só na mensagem que você envia.</p>
 </main>
 
+<script src="envio.js"></script>
 <script>
-/* ===== CONFIGURAÇÃO (pela URL do QR code, montada pela tag) =====
-   ?t=5531999998888     (WhatsApp do responsável: 55 + DDD + número; sem ele, o WhatsApp
-                         deixa escolher o contato, bom para testar mandando para você mesmo)
-   ?d=FindLK01          (identificação da tag; não entra na mensagem)
-   ============================================================== */
-const params = new URLSearchParams(location.search);
-const TELEFONE = (params.get("t") || "").replace(/\D/g, "").slice(0, 15);
-
-/* Formatação do WhatsApp: *negrito*, _itálico_, "> " no início da linha = citação.
-   O link fica sozinho e sem formatação na linha, para continuar clicável. */
-const TITULO = "🚨 *CRIANÇA ENCONTRADA!* 🚨\n\n";
-const AGUARDO_E_TEMPO_REAL =
-  "⏳ *Vou aguardar aqui!*\n\n" +
-  "Vou tentar compartilhar minha localização em tempo real para te ajudar a nos encontrar:\n" +
-  "> 📎 → _Localização_ → _Localização em tempo real_ → _1 hora_";
-
 const btn = document.getElementById("btn-enviar");
-const onde = document.getElementById("onde");
-const statusEl = document.getElementById("status");
-const pronto = document.getElementById("pronto");
-const linkWpp = document.getElementById("link-wpp");
-
-function setStatus(msg) {
-  statusEl.textContent = msg;
-}
-
-function abrir(texto) {
-  const base = TELEFONE ? "https://wa.me/" + TELEFONE : "https://wa.me/";
-  const url = base + "?text=" + encodeURIComponent(texto);
-  linkWpp.href = url;
-  pronto.hidden = false;
-  btn.disabled = false;
-  location.href = url; // navegação, não pop-up: funciona mesmo depois da espera do GPS
-}
-
-function descricao() {
-  const t = onde.value.trim();
-  return t ? "📝 _" + t.replace(/[_*~]/g, "") + "_\n" : "";
-}
-
-function comLocalizacao(lat, lon) {
-  // Sem "origin": o Maps traça a rota a partir de onde estiver quem abrir o link
-  const rota = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lon;
-  return TITULO + "Encontrei essa criança perdida! Segue a nossa localização:\n" +
-    "📍 " + rota + "\n" + descricao() + "\n" + AGUARDO_E_TEMPO_REAL;
-}
-
-function soTexto() {
-  const d = descricao();
-  return TITULO + "Encontrei essa criança perdida! " +
-    (d ? "Estamos aqui:\n" + d : "Me liga para combinarmos onde nos encontrar.\n") +
-    "\n" + AGUARDO_E_TEMPO_REAL;
-}
-
 btn.addEventListener("click", () => {
   btn.disabled = true;
-  if (!("geolocation" in navigator) || !window.isSecureContext) {
-    setStatus("Abrindo o WhatsApp com o que você escreveu…");
-    abrir(soTexto());
-    return;
-  }
-  setStatus("Pegando a localização… se o celular perguntar, toque em Permitir.");
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setStatus("Localização encontrada. Abrindo o WhatsApp…");
-      abrir(comLocalizacao(pos.coords.latitude.toFixed(6), pos.coords.longitude.toFixed(6)));
-    },
-    () => {
-      // Negou ou falhou: manda só o texto, sem pedir mais nada à pessoa
-      setStatus("Sem localização. Abrindo o WhatsApp com o que você escreveu…");
-      abrir(soTexto());
-    },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
-  );
+  FindLK.enviar(document.getElementById("onde").value, (codigo, texto) => {
+    document.getElementById("status").textContent = texto;
+    if (codigo !== "buscando") {
+      btn.disabled = false;
+      setTimeout(() => {
+        const link = document.getElementById("link-wpp");
+        link.href = FindLK.ultimaUrl();
+        link.hidden = false;
+      }, 0);
+    }
+  });
 });
 </script>
 </body>
