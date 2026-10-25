@@ -5,19 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Achei uma criança</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- display=swap: o texto aparece na hora com a fonte do sistema e troca para Roboto ao carregar -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 <style>
-/* Uma coluna, botão grande, nada de fontes externas: precisa abrir rápido
-   em qualquer celular, até com sinal fraco. */
+/* Uma coluna e botão grande: precisa ser rápida de entender em qualquer celular.
+   Só quatro estilos de texto: título, apoio, explicação e call to action. */
 :root {
   --bg: #fdf8f3;
   --card: #ffffff;
   --fg: #1d2330;
   --muted: #5d6475;
-  --accent: #1f7a4d;     /* verde: "está tudo bem, ele foi encontrado" */
+  --accent: #1f7a4d;     /* verde: "está tudo bem, ela foi encontrada" */
   --accent-fg: #ffffff;
   --alert: #c2410c;
   --line: #e7dfd5;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-title: 700 28px/1.2 var(--family);
+  --text-support: 400 18px/1.45 var(--family);
+  --text-body: 400 16px/1.5 var(--family);
+  --text-cta: 700 18px/1.2 var(--family);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -32,62 +40,70 @@
 [hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
-  background: var(--bg); color: var(--fg); font: 17px/1.5 var(--font);
+  background: var(--bg); color: var(--fg); font: var(--text-body);
   padding-block: max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-bottom));
   padding-left: max(16px, env(safe-area-inset-left));
   padding-right: max(16px, env(safe-area-inset-right));
 }
 main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
-h1 { font-size: 30px; line-height: 1.15; margin: 0; text-wrap: balance; }
-p { margin: 0; }
-.lead { color: var(--muted); }
+p, ul { margin: 0; }
+
+/* 1. Título */
+h1 { font: var(--text-title); margin: 0; text-wrap: balance; }
+/* 2. Texto de apoio */
+.support { font: var(--text-support); color: var(--muted); }
+/* 3. Texto da explicação: passos, campo, status e rodapé */
+.steps, .done, .status, .footer, textarea, label { font: var(--text-body); }
+.steps {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.steps ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.steps label { display: block; margin-bottom: 8px; }
+textarea {
+  width: 100%; min-height: 90px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--fg); padding: 12px;
+}
+.status { color: var(--muted); min-height: 1.5em; }
+.done { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.footer { color: var(--muted); }
+/* 4. Call to action */
 button, .btn {
   display: block; width: 100%; border: 0; border-radius: 14px; cursor: pointer;
-  padding: 18px 16px; font: 700 19px/1.2 var(--font); text-align: center; text-decoration: none;
+  padding: 18px 16px; font: var(--text-cta); text-align: center; text-decoration: none;
   background: var(--accent); color: var(--accent-fg);
 }
 button:disabled { opacity: .6; cursor: progress; }
 button:focus-visible, .btn:focus-visible, textarea:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
-.status { font-size: 15px; color: var(--muted); min-height: 1.5em; }
-textarea {
-  width: 100%; min-height: 90px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--card); color: var(--fg); padding: 12px; font: 17px/1.4 var(--font);
-}
-.done { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.small { font-size: 13px; color: var(--muted); }
-.steps { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
-.steps-title { font-weight: 700; margin-bottom: 8px; }
-.steps ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
-.steps label { font-weight: 600; display: block; margin-bottom: 8px; }
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 </style>
 </head>
 <body>
 <main>
   <h1>Você encontrou uma criança perdida. Obrigado!</h1>
-  <p class="lead">Os responsáveis já estão procurando. Fique com a criança aí mesmo até os responsáveis chegarem ou chame a polícia.</p>
+  <p class="support">Os responsáveis já estão procurando. Fique com a criança aí mesmo até os responsáveis chegarem ou chame a polícia.</p>
 
   <section class="steps">
-    <p class="steps-title">Para ajudar a encontrar mais rápido:</p>
-    <ol>
+    <p>Para ajudar a encontrar mais rápido, são apenas 3 passos:</p>
+    <ul>
       <li>
-        <label for="onde">Descreva onde vocês estão</label>
+        <label for="onde">Passo 1: descreva onde vocês estão</label>
         <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
       </li>
-      <li>Lembre de aceitar compartilhar a localização ao enviar</li>
-      <li>Clique no botão abaixo</li>
-    </ol>
+      <li>Passo 2: lembre de aceitar compartilhar a localização ao enviar no passo 3</li>
+      <li>Passo 3: clique no botão abaixo</li>
+    </ul>
   </section>
 
   <button id="btn-enviar" type="button">📍 Enviar aos responsáveis pelo WhatsApp</button>
   <p id="status" class="status" role="status" aria-live="polite"></p>
 
   <div id="pronto" class="done" hidden>
-    <p>Pronto. Agora é só tocar em <strong>enviar</strong> no WhatsApp.</p>
+    <p>Pronto. Agora é só tocar em enviar no WhatsApp.</p>
     <a id="link-wpp" class="btn" href="#">Abrir o WhatsApp de novo</a>
   </div>
 
-  <p class="small">Você pode usar esta página sempre que quiser. Ela não guarda nenhum dado. A localização vai só na mensagem que você mesmo envia.</p>
+  <p class="footer">Você pode usar esta página sempre que quiser. Ela não guarda nenhum dado. A localização vai só na mensagem que você mesmo envia.</p>
 </main>
 
 <script>
