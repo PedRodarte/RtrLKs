@@ -270,18 +270,13 @@ estranho não deve saber o nome dela.
 | `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
 | `d` | `FindLK01` | Identificação da tag (não entra na mensagem) |
 
-Na página, quem encontrou a criança:
+Na página, quem encontrou a criança segue três passos: **descreve onde estão** (opcional:
+loja, andar, rua), **aceita compartilhar a localização** quando o celular perguntar e toca no
+**único botão**, que abre o WhatsApp com a mensagem pronta.
 
-- pode **descrever onde estão** num campo sempre visível (opcional): loja, andar, rua. A
-  descrição vai junto na mensagem, e ajuda mesmo com GPS (dentro de shopping ele erra o andar);
-- toca em **📍 Enviar nossa localização**: a página pega o GPS e abre o WhatsApp com a
-  mensagem pronta;
-- ou toca em **Enviar só o que escrevi**, sem localização, para quem não quer ou não
-  consegue liberar o GPS (por exemplo, uma pessoa idosa).
-
-A página reconhece iPhone e Android: antes do toque, mostra a dica de tocar em **Permitir**;
-se a localização for negada, mostra o passo a passo para liberar naquele aparelho (Ajustes
-do Site no Safari, cadeado no Chrome).
+- Com localização: a mensagem leva o link de rota do Maps e a descrição.
+- Se a pessoa negar a localização (ou o GPS falhar): a página manda **só o texto**, sem
+  pedir mais nada. Isso ajuda quem não sabe o que autorizar, como uma pessoa idosa.
 
 Mensagem enviada:
 
