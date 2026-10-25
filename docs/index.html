@@ -31,7 +31,9 @@ body { padding-top: 0; }
   width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
   background: var(--alert-bg); color: var(--alert); font: var(--text-cta);
 }
-.step label { display: block; margin-bottom: 8px; padding-top: 8px; }
+.step label { display: block; padding-top: 8px; }
+/* Passo 1: o campo ocupa a largura toda do cartão, para os exemplos caberem */
+.step-wide textarea { grid-column: 1 / -1; }
 .step p { padding-top: 8px; }
 .call { display: flex; flex-direction: column; gap: 12px; }
 .sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 18px; }
@@ -50,12 +52,10 @@ body { padding-top: 0; }
 
   <p class="body">Para ajudar eles a te encontrar mais rápido, siga estes 3 passos simples:</p>
   <ol class="steps">
-    <li class="card step">
+    <li class="card step step-wide">
       <span class="num" aria-hidden="true">1</span>
-      <div>
-        <label for="onde">Descreva onde vocês estão</label>
-        <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
-      </div>
+      <label for="onde">Descreva onde vocês estão</label>
+      <textarea id="onde" rows="3" placeholder="• Estamos na beira-mar, estou de vestido azul&#10;• Na entrada da loja X, 2º piso do shopping&#10;• Na entrada do parque, com a segurança"></textarea>
     </li>
     <li class="card step">
       <span class="num" aria-hidden="true">2</span>
@@ -94,6 +94,23 @@ if (tel) {
   link.textContent = "📞 Ligar para " + tel.exibir;
   document.getElementById("ligar").hidden = false;
 }
+
+// O campo tem no mínimo 3 linhas, mostra os exemplos inteiros mesmo em celular estreito
+// e cresce conforme a pessoa escreve
+const onde = document.getElementById("onde");
+function ajustarAltura() {
+  const texto = onde.value;
+  onde.style.height = "auto";
+  if (!texto) {
+    onde.value = onde.placeholder; // mede a altura que os exemplos precisam
+  }
+  const altura = onde.scrollHeight + 2; // + borda
+  onde.value = texto;
+  onde.style.height = altura + "px";
+}
+onde.addEventListener("input", ajustarAltura);
+window.addEventListener("resize", ajustarAltura);
+ajustarAltura();
 
 const btn = document.getElementById("btn-enviar");
 btn.addEventListener("click", () => {

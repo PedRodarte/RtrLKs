@@ -69,7 +69,8 @@ button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visibl
 @media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
 
 textarea {
-  width: 100%; min-height: 84px; border-radius: 10px; border: 1px solid var(--line);
+  /* altura de 3 linhas (16px × 1,5) + espaçamento interno */
+  width: 100%; min-height: calc(3 * 1.5em + 26px); resize: vertical; border-radius: 10px; border: 1px solid var(--line);
   background: var(--card); color: var(--fg); padding: 12px;
 }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
