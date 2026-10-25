@@ -17,6 +17,8 @@
   --calm-line: #24543a;
   --cta-border: #0b2e1e; /* verde escuro */
   --cta-shadow: #000000;
+  --cta-top: #4fd495;    /* degradê do botão principal */
+  --cta-bottom: #27986a;
   --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
   --text-title: 700 28px/1.2 var(--family);
   --text-support: 400 18px/1.45 var(--family);
@@ -57,6 +59,8 @@ button:disabled { opacity: .6; cursor: progress; }
 .btn-primary {
   border: 2px solid var(--cta-border);
   box-shadow: 5px 5px 0 var(--cta-shadow);
+  /* degradê sutil no mesmo verde: luz vindo de cima */
+  background: linear-gradient(180deg, var(--cta-top) 0%, var(--cta-bottom) 100%);
 }
 .btn-primary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--cta-shadow); }
 /* Ação secundária: mesmo estilo de texto, mas com contorno para não competir com a principal */
