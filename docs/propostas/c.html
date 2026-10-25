@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Achei uma criança</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+<link rel="stylesheet" href="../estilo.css">
+<style>
+/* Proposta C: faixa de alerta no topo e passos como cartões numerados */
+body { padding-top: 0; }
+.banner {
+  /* ocupa a largura toda da tela, mesmo dentro do main centralizado */
+  width: 100vw; margin-left: calc(50% - 50vw);
+  padding: max(24px, env(safe-area-inset-top)) max(20px, calc(50vw - 15rem + 4px)) 22px;
+  background: var(--alert); color: #fff; display: flex; flex-direction: column; gap: 8px;
+}
+.banner .support { color: #fff; opacity: .95; }
+.steps { display: flex; flex-direction: column; gap: 12px; list-style: none; padding: 0; }
+.step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; }
+.num {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--alert-bg); color: var(--alert); font: var(--text-cta);
+}
+.step label { display: block; margin-bottom: 8px; padding-top: 8px; }
+.step p { padding-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <header class="banner">
+    <h1>⚠ Criança perdida</h1>
+    <p class="support">Obrigado por ajudar! Os responsáveis já estão procurando. Fique com a criança aí mesmo ou chame a polícia.</p>
+  </header>
+
+  <ol class="steps">
+    <li class="card step">
+      <span class="num" aria-hidden="true">1</span>
+      <div>
+        <label for="onde">Escreva onde vocês estão</label>
+        <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
+      </div>
+    </li>
+    <li class="card step">
+      <span class="num" aria-hidden="true">2</span>
+      <p class="body">Quando o celular perguntar, toque em Permitir para mandar a localização</p>
+    </li>
+    <li class="card step">
+      <span class="num" aria-hidden="true">3</span>
+      <p class="body">Toque no botão verde e depois em enviar no WhatsApp</p>
+    </li>
+  </ol>
+
+  <button id="btn-enviar" type="button">📍 Enviar aos responsáveis pelo WhatsApp</button>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+  <a id="link-wpp" class="btn" href="#" hidden>Abrir o WhatsApp de novo</a>
+
+  <p class="body muted">Sem cadastro e sem app. Esta página não guarda nenhum dado: a localização vai só na mensagem que você envia.</p>
+</main>
+
+<script src="../envio.js"></script>
+<script>
+const btn = document.getElementById("btn-enviar");
+btn.addEventListener("click", () => {
+  btn.disabled = true;
+  FindLK.enviar(document.getElementById("onde").value, (codigo, texto) => {
+    document.getElementById("status").textContent = texto;
+    if (codigo !== "buscando") {
+      btn.disabled = false;
+      setTimeout(() => {
+        const link = document.getElementById("link-wpp");
+        link.href = FindLK.ultimaUrl();
+        link.hidden = false;
+      }, 0);
+    }
+  });
+});
+</script>
+</body>
+</html>

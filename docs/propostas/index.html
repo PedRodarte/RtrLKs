@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>FindLK: propostas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+<link rel="stylesheet" href="../estilo.css">
+<style>
+.card { display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>3 propostas para a página do QR</h1>
+  <p class="support">Abra cada uma no celular, faça o teste completo e compare. Todas mandam a mesma mensagem.</p>
+
+  <section class="card">
+    <p class="title">A · Botão no polegar</p>
+    <p class="body">Mínimo de texto e o botão fixo embaixo da tela, onde o polegar alcança. A dica de tocar em Permitir fica colada no botão.</p>
+    <a class="btn" data-href="a.html" href="a.html">Abrir proposta A</a>
+  </section>
+
+  <section class="card">
+    <p class="title">B · Passo a passo</p>
+    <p class="body">Uma pergunta por tela. A segunda tela mostra como o pedido de localização vai aparecer e onde tocar, antes de ele aparecer.</p>
+    <a class="btn" data-href="b.html" href="b.html">Abrir proposta B</a>
+  </section>
+
+  <section class="card">
+    <p class="title">C · Alerta visual</p>
+    <p class="body">Faixa de alerta no topo para chamar atenção e os três passos em cartões numerados, com o botão logo abaixo.</p>
+    <a class="btn" data-href="c.html" href="c.html">Abrir proposta C</a>
+  </section>
+
+  <p class="body muted">Dica: coloque ?t=55DDDSEUNUMERO no fim do endereço desta página; ele é repassado para as propostas.</p>
+</main>
+<script>
+// Repassa ?t=... para as propostas
+document.querySelectorAll("a[data-href]").forEach((a) => { a.href = a.dataset.href + location.search; });
+</script>
+</body>
+</html>

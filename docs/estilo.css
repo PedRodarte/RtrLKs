@@ -1,0 +1,64 @@
+/* Base comum: Roboto e só quatro estilos de texto (título, apoio, explicação, call to action). */
+:root {
+  --bg: #fdf8f3;
+  --card: #ffffff;
+  --fg: #1d2330;
+  --muted: #5d6475;
+  --accent: #1f7a4d;     /* verde: "está tudo bem, ela foi encontrada" */
+  --accent-fg: #ffffff;
+  --alert: #c2410c;
+  --alert-bg: #fff1e8;
+  --line: #e7dfd5;
+  --family: Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-title: 700 28px/1.2 var(--family);
+  --text-support: 400 18px/1.45 var(--family);
+  --text-body: 400 16px/1.5 var(--family);
+  --text-cta: 700 18px/1.2 var(--family);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171d; --card: #1d2129; --fg: #eef0f4; --muted: #a3a9b6;
+    --accent: #34b37a; --accent-fg: #08140e; --alert: #fb923c; --alert-bg: #2a1d14; --line: #2c313b;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; } /* display:flex das caixas anularia o hidden */
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font: var(--text-body);
+  padding-block: max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+main { max-width: 30rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+p, ul, ol { margin: 0; }
+
+/* 1. Título */
+h1, .title { font: var(--text-title); margin: 0; text-wrap: balance; }
+/* 2. Texto de apoio */
+.support { font: var(--text-support); color: var(--muted); }
+/* 3. Texto da explicação */
+.body, label, textarea, .status { font: var(--text-body); }
+.muted, .status { color: var(--muted); }
+/* 4. Call to action */
+button, .btn, .cta {
+  font: var(--text-cta);
+}
+button, .btn {
+  display: block; width: 100%; min-height: 56px; border: 0; border-radius: 14px; cursor: pointer;
+  padding: 18px 16px; text-align: center; text-decoration: none;
+  background: var(--accent); color: var(--accent-fg);
+}
+button:disabled { opacity: .6; cursor: progress; }
+button:focus-visible, .btn:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--alert); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { button, .btn { transition: transform .1s; } button:active, .btn:active { transform: scale(.98); } }
+
+textarea {
+  width: 100%; min-height: 84px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--card); color: var(--fg); padding: 12px;
+}
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.status { min-height: 1.5em; }
+html { overflow-x: hidden; } /* faixas de largura total (100vw) não criam rolagem lateral */

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Achei uma criança</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+<link rel="stylesheet" href="../estilo.css">
+<style>
+/* Proposta B: uma pergunta por tela e preparo para o pedido de localização */
+.progress { display: flex; gap: 6px; }
+.progress span { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.progress span.on { background: var(--accent); }
+.screen { display: flex; flex-direction: column; gap: 18px; }
+label { display: block; margin-bottom: 8px; }
+.skip { background: none; color: var(--muted); min-height: 48px; padding: 12px; font: var(--text-body); text-decoration: underline; }
+
+/* Imitação do pedido de permissão do celular, com "Permitir" destacado */
+.prompt { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); }
+.prompt-actions { display: flex; flex-direction: column; gap: 8px; }
+.prompt-actions span { display: block; text-align: center; padding: 12px; border-radius: 10px; border: 1px solid var(--line); }
+.prompt-actions .allow { border: 3px solid var(--accent); color: var(--accent); font: var(--text-cta); position: relative; }
+.prompt-actions .allow::after { content: "👈 toque aqui"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font: var(--text-body); }
+</style>
+</head>
+<body>
+<main>
+  <div class="progress" aria-hidden="true"><span id="p1" class="on"></span><span id="p2"></span></div>
+
+  <section id="tela1" class="screen">
+    <h1>Você encontrou uma criança perdida. Obrigado!</h1>
+    <p class="support">Os responsáveis já estão procurando. Fique com a criança aí mesmo ou chame a polícia.</p>
+    <div>
+      <label for="onde">Passo 1 de 2: onde vocês estão?</label>
+      <textarea id="onde" placeholder="Ex.: na entrada da loja X, 2º piso do shopping"></textarea>
+    </div>
+    <button id="btn-continuar" type="button">Continuar</button>
+    <button id="btn-pular" type="button" class="skip">Não sei descrever, pular</button>
+  </section>
+
+  <section id="tela2" class="screen" hidden>
+    <h1>Agora vamos mandar a localização</h1>
+    <p class="support">Passo 2 de 2: com ela, os responsáveis chegam direto até vocês.</p>
+    <div class="prompt" aria-hidden="true">
+      <p class="body">O celular vai perguntar assim:</p>
+      <p class="body"><span id="site"></span> quer usar sua localização</p>
+      <div class="prompt-actions">
+        <span class="body">Não permitir</span>
+        <span class="allow">Permitir</span>
+      </div>
+    </div>
+    <button id="btn-enviar" type="button">📍 Entendi, enviar pelo WhatsApp</button>
+  </section>
+
+  <section id="tela3" class="screen" hidden>
+    <h1>Abrindo o WhatsApp…</h1>
+    <p class="support">A mensagem já está pronta. É só tocar em enviar.</p>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <a id="link-wpp" class="btn" href="#" hidden>Abrir o WhatsApp de novo</a>
+  </section>
+
+  <p class="body muted">Sem cadastro e sem app. Esta página não guarda nenhum dado.</p>
+</main>
+
+<script src="../envio.js"></script>
+<script>
+const telas = [1, 2, 3].map((n) => document.getElementById("tela" + n));
+function mostrar(n) {
+  telas.forEach((t, i) => { t.hidden = i !== n - 1; });
+  [1, 2].forEach((i) => document.getElementById("p" + i).classList.toggle("on", i <= n));
+  window.scrollTo(0, 0);
+}
+document.getElementById("site").textContent = location.hostname || "Este site";
+document.getElementById("btn-continuar").addEventListener("click", () => mostrar(2));
+document.getElementById("btn-pular").addEventListener("click", () => {
+  document.getElementById("onde").value = "";
+  mostrar(2);
+});
+document.getElementById("btn-enviar").addEventListener("click", () => {
+  mostrar(3);
+  FindLK.enviar(document.getElementById("onde").value, (codigo, texto) => {
+    document.getElementById("status").textContent = texto;
+    if (codigo !== "buscando") {
+      setTimeout(() => {
+        const link = document.getElementById("link-wpp");
+        link.href = FindLK.ultimaUrl();
+        link.hidden = false;
+      }, 0);
+    }
+  });
+});
+</script>
+</body>
+</html>
