@@ -25,6 +25,7 @@ body { padding-top: 0; }
   border-radius: 10px; padding: var(--space);
 }
 .calm.support { color: var(--calm-fg); }
+.call { display: flex; flex-direction: column; gap: var(--space); }
 .sep { border: 0; border-top: 1px solid var(--line); margin: 0; }
 /* Status vazio não ocupa espaço */
 .status:empty { display: none; }
@@ -42,8 +43,11 @@ body { padding-top: 0; }
   <p id="status" class="status" role="status" aria-live="polite"></p>
   <a id="link-wpp" class="btn" href="#" hidden>Abrir o WhatsApp de novo</a>
 
-  <hr id="sep" class="sep" hidden>
-  <a id="tel-link" class="btn btn-outline" href="#" hidden></a>
+  <div id="ligar" class="call" hidden>
+    <hr class="sep">
+    <p class="body">Você também pode ligar para o responsável:</p>
+    <a id="tel-link" class="btn btn-outline" href="#"></a>
+  </div>
 </main>
 
 <script src="envio.js"></script>
@@ -53,8 +57,7 @@ if (tel) {
   const link = document.getElementById("tel-link");
   link.href = tel.link;
   link.textContent = "📞 Ligar para " + tel.exibir;
-  link.hidden = false;
-  document.getElementById("sep").hidden = false;
+  document.getElementById("ligar").hidden = false;
 }
 
 const btn = document.getElementById("btn-enviar");
