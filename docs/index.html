@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 <link rel="stylesheet" href="estilo.css">
 <style>
-/* Página do QR (proposta C escolhida): urgência (faixa vermelha) + tranquilidade (cartão verde) + passos numerados */
+/* Página do QR: urgência (faixa vermelha) + tranquilidade (cartão verde) + um botão principal */
 body { padding-top: 0; }
 .banner {
   /* ocupa a largura toda da tela, mesmo dentro do main centralizado */
@@ -25,21 +25,9 @@ body { padding-top: 0; }
   border-radius: 10px; padding: var(--space);
 }
 .calm.support { color: var(--calm-fg); }
-.steps { display: flex; flex-direction: column; gap: var(--space); list-style: none; padding: 0; }
-.step { display: grid; grid-template-columns: 32px 1fr; gap: 10px; align-items: start; }
-.num {
-  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--alert-bg); color: var(--alert); font: var(--text-cta);
-}
-.step label { display: block; padding-top: 4px; }
-/* Passo 1: o campo ocupa a largura toda do cartão, para os exemplos caberem */
-.step-wide textarea { grid-column: 1 / -1; }
-.step p { padding-top: 4px; }
-.call { display: flex; flex-direction: column; gap: var(--space); }
-.sep { border: 0; border-top: 1px solid var(--line); margin: 0 0 var(--space); }
-/* Status vazio não ocupa espaço: a linha fica no meio entre o botão e o cartão de ligar */
+.sep { border: 0; border-top: 1px solid var(--line); margin: 0; }
+/* Status vazio não ocupa espaço */
 .status:empty { display: none; }
-.footer { display: flex; flex-direction: column; gap: var(--space); }
 </style>
 </head>
 <body>
@@ -48,40 +36,14 @@ body { padding-top: 0; }
     <h1><span class="badge" aria-hidden="true">🚨</span> Criança perdida: obrigado por ajudar!</h1>
   </header>
 
-  <p class="support calm">✅ Estamos procurando, fique parado e siga estes 3 passos, ou chame a polícia:</p>
+  <p class="support calm">✅ Estamos procurando: fique parado aí ou chame a polícia.</p>
 
-  <ol class="steps">
-    <li class="card step step-wide">
-      <span class="num" aria-hidden="true">1</span>
-      <label for="onde">Descreva onde vocês estão</label>
-      <textarea id="onde" rows="3" placeholder="• Na beira-mar, estou de vestido azul&#10;• Na entrada da loja X, 2º piso do shopping"></textarea>
-    </li>
-    <li class="card step">
-      <span class="num" aria-hidden="true">2</span>
-      <p class="body">Se puder: quando o celular perguntar, permita ele enviar a localização</p>
-    </li>
-    <li class="card step">
-      <span class="num" aria-hidden="true">3</span>
-      <p class="body">Toque no botão abaixo</p>
-    </li>
-  </ol>
-
-  <button id="btn-enviar" type="button" class="btn-primary">📍 Enviar pelo WhatsApp</button>
+  <button id="btn-enviar" type="button" class="btn-primary">📍 Compartilhar localização</button>
   <p id="status" class="status" role="status" aria-live="polite"></p>
   <a id="link-wpp" class="btn" href="#" hidden>Abrir o WhatsApp de novo</a>
 
-  <div id="ligar" hidden>
-    <hr class="sep">
-    <section class="card call">
-      <p class="body">Você também pode ligar para o responsável:</p>
-      <a id="tel-link" class="btn btn-outline" href="#"></a>
-    </section>
-  </div>
-
-  <div class="footer">
-    <p class="body muted">Você pode usar esta página sempre que quiser para atualizar a localização ou entrar em contato com os responsáveis.</p>
-    <p class="body muted">Ela não guarda nenhum dado e a localização vai só na mensagem que você envia.</p>
-  </div>
+  <hr id="sep" class="sep" hidden>
+  <a id="tel-link" class="btn btn-outline" href="#" hidden></a>
 </main>
 
 <script src="envio.js"></script>
@@ -91,30 +53,14 @@ if (tel) {
   const link = document.getElementById("tel-link");
   link.href = tel.link;
   link.textContent = "📞 Ligar para " + tel.exibir;
-  document.getElementById("ligar").hidden = false;
+  link.hidden = false;
+  document.getElementById("sep").hidden = false;
 }
-
-// O campo tem no mínimo 3 linhas, mostra os exemplos inteiros mesmo em celular estreito
-// e cresce conforme a pessoa escreve
-const onde = document.getElementById("onde");
-function ajustarAltura() {
-  const texto = onde.value;
-  onde.style.height = "auto";
-  if (!texto) {
-    onde.value = onde.placeholder; // mede a altura que os exemplos precisam
-  }
-  const altura = onde.scrollHeight + 2; // + borda
-  onde.value = texto;
-  onde.style.height = altura + "px";
-}
-onde.addEventListener("input", ajustarAltura);
-window.addEventListener("resize", ajustarAltura);
-ajustarAltura();
 
 const btn = document.getElementById("btn-enviar");
 btn.addEventListener("click", () => {
   btn.disabled = true;
-  FindLK.enviar(document.getElementById("onde").value, (codigo, texto) => {
+  FindLK.enviar("", (codigo, texto) => {
     document.getElementById("status").textContent = texto;
     if (codigo !== "buscando") {
       btn.disabled = false;

@@ -297,11 +297,11 @@ estranho não deve saber o nome dela.
 | `t` | `5531999998888` | WhatsApp do responsável (55 + DDD + número) |
 | `d` | `FindLK01` | Identificação da tag (não entra na mensagem) |
 
-Na página, quem encontrou a criança segue três passos: **descreve onde estão** (opcional:
-loja, andar, rua), **aceita compartilhar a localização** quando o celular perguntar e toca no
-**único botão**, que abre o WhatsApp com a mensagem pronta.
+A página é mínima: faixa "Criança perdida: obrigado por ajudar!", cartão verde ("Estamos
+procurando: fique parado aí ou chame a polícia."), o botão **📍 Compartilhar localização** e, no
+fim, o botão **📞 Ligar para…** (só aparece se a URL tiver o telefone).
 
-- Com localização: a mensagem leva o link de rota do Maps e a descrição.
+- Com localização: a mensagem do WhatsApp leva o link de rota do Maps.
 - Se a pessoa negar a localização (ou o GPS falhar): a página manda **só o texto**, sem
   pedir mais nada. Isso ajuda quem não sabe o que autorizar, como uma pessoa idosa.
 

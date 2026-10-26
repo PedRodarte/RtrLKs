@@ -22,7 +22,7 @@
   const STATUS = {
     buscando: "Pegando a localização… se o celular perguntar, toque em Permitir.",
     ok: "Localização encontrada. Abrindo o WhatsApp…",
-    sem_gps: "Sem localização. Abrindo o WhatsApp com o que você escreveu…",
+    sem_gps: "Sem localização. Abrindo o WhatsApp…",
   };
 
   let ultimaUrl = "";
